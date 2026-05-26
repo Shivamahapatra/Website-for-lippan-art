@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body { background-color: #f4f6f9; }
+        .admin-nav { background: #2c3e50; padding: 1rem 5%; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .admin-nav a { color: #ecf0f1; text-decoration: none; margin-left: 2rem; font-weight: 500; }
+        .admin-nav a:hover { color: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="admin-nav">
+        <div style="font-size: 1.5rem; font-weight: bold;">Lippan Art Admin</div>
+        <div>
+            <a href="{{ url_for('admin_inventory') }}">Inventory & Pricing</a>
+            <a href="{{ url_for('admin_commissions') }}">Commissions Inbox</a>
+            <a href="{{ url_for('admin_orders') }}">Order Management</a>
+            <a href="{{ url_for('index') }}" target="_blank">View Live Site</a>
+            <a href="{{ url_for('admin_logout') }}" style="color: #e74c3c;">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

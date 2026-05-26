@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; background: #fff; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <h1 style="color: var(--primary-color); text-align: center; margin-bottom: 2rem;">Track Your Order</h1>
+    
+    <form method="GET" action="{{ url_for('track_order') }}" style="display: flex; gap: 10px; margin-bottom: 3rem;">
+        <input type="text" name="tracking_id" placeholder="Enter your 8-character Tracking ID" value="{{ request.args.get('tracking_id', '') }}" required style="flex: 1; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1.1rem;">
+        <button type="submit" class="btn" style="border-radius: 8px; padding: 0 2rem;">Track</button>
+    </form>
+
+    {% if order %}
+    <div style="border: 1px solid #eee; padding: 2rem; border-radius: 10px; background: #faf8f5;">
+        <h2 style="margin-top: 0;">Order for {{ order.customer_name }}</h2>
+        <p style="color: #666;">Placed on {{ order.created_at.strftime('%Y-%m-%d') }}</p>
+        
+        <div style="margin-top: 2rem;">
+            <strong>Current Status: <span style="color: var(--primary-color); font-size: 1.2rem;">{{ order.status }}</span></strong>
+            
+            {% set stages = ['Order Received', 'Prepping Board', 'Clay & Mirror Work', 'Drying', 'Shipped'] %}
+            {% set current_idx = stages.index(order.status) if order.status in stages else 0 %}
+            
+            <div class="progress-container" style="height: 15px; margin-top: 1rem;">
+                {% set width_percent = (current_idx / (stages | length - 1)) * 100 %}
+                <div class="progress-bar" style="width: {{ width_percent }}%;"></div>
+            </div>
+            <div class="stage-labels" style="font-size: 0.9rem; margin-top: 10px;">
+                {% for stage in stages %}
+                    <span class="{% if loop.index0 <= current_idx %}stage-active{% endif %}">{{ stage }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if order.status == 'Shipped' %}
+        <div class="alert alert-success" style="margin-top: 2rem;">
+            Your order has been shipped! It should arrive in 3-5 business days.
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

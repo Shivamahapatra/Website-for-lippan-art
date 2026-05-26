@@ -1,0 +1,35 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Inventory & Pricing</h2>
+</div>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Available Sizes</th>
+            <th>Price (₹)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td><strong>{{ product.name }}</strong></td>
+            <td>{{ product.sizes }}</td>
+            <td>
+                <form action="{{ url_for('update_inventory', product_id=product.id) }}" method="POST" style="display: flex; gap: 10px;">
+                    <input type="number" name="price" value="{{ product.price }}" step="0.01" style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px; width: 100px;">
+                    <button type="submit" class="btn" style="padding: 0.5rem 1rem; border-radius: 5px; font-size: 0.9rem;">Save</button>
+                </form>
+            </td>
+            <td>
+                <a href="{{ url_for('product', product_id=product.id) }}" target="_blank" style="color: #3498db; text-decoration: none;">View on Site</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

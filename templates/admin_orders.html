@@ -1,0 +1,56 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h2>Order Management</h2>
+</div>
+
+<div style="display: grid; gap: 2rem;">
+    {% for order in orders %}
+    <div style="background: #fff; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <div>
+                <h3 style="margin: 0;">Order #{{ order.id }} - {{ order.customer_name }}</h3>
+                <p style="margin: 0; color: #666;">Tracking ID: <strong>{{ order.tracking_id }}</strong></p>
+                <p style="margin: 0; color: #666;">Total: ₹{{ order.total_amount }}</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0; color: #888; font-size: 0.9rem;">Placed on {{ order.created_at.strftime('%Y-%m-%d') }}</p>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <strong>Shipping To:</strong>
+            <p style="margin: 0.5rem 0 0 0; white-space: pre-wrap; background: #f9f9f9; padding: 0.5rem; border-radius: 5px;">{{ order.shipping_address }}</p>
+        </div>
+
+        <div>
+            <strong>Current Stage: <span style="color: var(--primary-color);">{{ order.status }}</span></strong>
+            
+            <div class="progress-container">
+                {% set current_idx = stages.index(order.status) if order.status in stages else 0 %}
+                {% set width_percent = (current_idx / (stages | length - 1)) * 100 %}
+                <div class="progress-bar" style="width: {{ width_percent }}%;"></div>
+            </div>
+            <div class="stage-labels">
+                {% for stage in stages %}
+                    <span class="{% if loop.index0 <= current_idx %}stage-active{% endif %}">{{ stage }}</span>
+                {% endfor %}
+            </div>
+            
+            {% if current_idx < (stages | length - 1) %}
+            <form action="{{ url_for('advance_order', order_id=order.id) }}" method="POST" style="margin-top: 1.5rem;">
+                <button type="submit" class="btn" style="background-color: #27ae60;">
+                    Advance to: {{ stages[current_idx + 1] }}
+                </button>
+            </form>
+            {% else %}
+            <p style="margin-top: 1.5rem; color: #27ae60; font-weight: bold;">Order Complete & Shipped!</p>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <p>No orders placed yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
