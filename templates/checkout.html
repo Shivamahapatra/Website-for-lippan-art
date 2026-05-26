@@ -10,7 +10,7 @@
         <p style="margin: 0;"><strong>Price:</strong> ₹{{ product.price }}</p>
     </div>
 
-    <form method="POST">
+    <form id="checkout-form">
         <div class="form-group">
             <label>Full Name</label>
             <input type="text" name="customer_name" required>
@@ -20,17 +20,114 @@
             <input type="email" name="email" required>
         </div>
         <div class="form-group">
-            <label>Complete Shipping Address</label>
-            <textarea name="shipping_address" rows="4" required></textarea>
+            <label>Phone Number (for pickup updates)</label>
+            <input type="text" name="phone_number" required>
         </div>
         
-        <!-- Placeholder for actual Razorpay Payment Button -->
-        <button type="submit" class="btn" style="width: 100%; font-size: 1.1rem; padding: 1rem;">
-            Place Order (₹{{ product.price }})
+        <div class="alert alert-info" style="margin-top: 1rem;">
+            <strong>Note:</strong> Currently we are only accepting Local Pickup orders. You will receive an SMS/Email when your item is ready to be picked up!
+        </div>
+        
+        <button type="button" id="pay-btn" class="btn" style="width: 100%; font-size: 1.1rem; padding: 1rem; background-color: #2b80ff;">
+            Pay Securely with Razorpay (₹{{ product.price }})
         </button>
-        <p style="text-align: center; font-size: 0.8rem; color: #888; margin-top: 1rem;">
-            *Payment gateway simulation. In a real online deployment, this would open Razorpay.
-        </p>
     </form>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('pay-btn').onclick = async function(e) {
+    e.preventDefault();
+    
+    const form = document.getElementById('checkout-form');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    // Disable button to prevent double clicks
+    const btn = document.getElementById('pay-btn');
+    btn.disabled = true;
+    btn.innerText = 'Processing...';
+    
+    try {
+        // 1. Create Order on Backend
+        const createRes = await fetch('/api/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_id: '{{ product.id }}' })
+        });
+        const orderData = await createRes.json();
+        
+        if (orderData.error) {
+            alert("Error creating order: " + orderData.error);
+            btn.disabled = false;
+            btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+            return;
+        }
+
+        // 2. Open Razorpay Checkout Modal
+        var options = {
+            "key": "{{ razorpay_key_id }}",
+            "amount": orderData.amount,
+            "currency": orderData.currency,
+            "name": "Her Lippan Art",
+            "description": "{{ product.name }}",
+            "order_id": orderData.order_id,
+            "handler": async function (response) {
+                // 3. Verify Payment Signature on Backend
+                const verifyRes = await fetch('/api/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        customer_name: form.customer_name.value,
+                        email: form.email.value,
+                        phone_number: form.phone_number.value,
+                        product_id: '{{ product.id }}',
+                        size: '{{ size }}'
+                    })
+                });
+                const verifyData = await verifyRes.json();
+                
+                if (verifyData.success) {
+                    window.location.href = '/track?tracking_id=' + verifyData.tracking_id;
+                } else {
+                    alert("Payment verification failed: " + verifyData.error);
+                    btn.disabled = false;
+                    btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+                }
+            },
+            "prefill": {
+                "name": form.customer_name.value,
+                "email": form.email.value,
+                "contact": form.phone_number.value
+            },
+            "theme": {
+                "color": "#e67e22"
+            },
+            "modal": {
+                "ondismiss": function() {
+                    btn.disabled = false;
+                    btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+                }
+            }
+        };
+        var rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response){
+            alert("Payment Failed: " + response.error.description);
+            btn.disabled = false;
+            btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+        });
+        rzp.open();
+    } catch (err) {
+        alert("An unexpected error occurred: " + err.message);
+        btn.disabled = false;
+        btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+    }
+}
+</script>
 </div>
 {% endblock %}

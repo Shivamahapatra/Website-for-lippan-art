@@ -31,15 +31,29 @@ class Commission(db.Model):
     status = db.Column(db.String(50), default='New') # New, Reviewed, Accepted, Completed
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class ContactMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False)
-    shipping_address = db.Column(db.Text, nullable=False)
+    phone_number = db.Column(db.String(20), nullable=False)
     total_amount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(50), default='Order Received') 
-    # 'Order Received', 'Prepping Board', 'Clay & Mirror Work', 'Drying', 'Shipped'
+    # 'Order Received', 'Prepping Board', 'Clay & Mirror Work', 'Drying', 'Ready for Pickup'
     tracking_id = db.Column(db.String(50), unique=True, nullable=False)
+    
+    # Razorpay Integration Fields
+    razorpay_order_id = db.Column(db.String(100), nullable=True)
+    razorpay_payment_id = db.Column(db.String(100), nullable=True)
+    razorpay_signature = db.Column(db.String(200), nullable=True)
+    payment_status = db.Column(db.String(20), default='Pending') # Pending, Paid, Failed
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     items = db.relationship('OrderItem', backref='order', lazy=True)

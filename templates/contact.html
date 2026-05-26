@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Contact Us</h2>
+<p>Have a question or want to get in touch? Send us a message!</p>
+<div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; max-width: 600px;">
+    <strong>Direct Contacts:</strong><br>
+    📞 7899214104 (Mom)<br>
+    📞 9384851109
+</div>
+
+<form method="POST" action="{{ url_for('contact') }}" class="form-container" style="max-width: 600px;">
+    <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" name="name" required>
+    </div>
+    <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" required>
+    </div>
+    <div class="form-group">
+        <label>Message</label>
+        <textarea name="message" rows="6" required></textarea>
+    </div>
+    
+    <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Send Message</button>
+</form>
+{% endblock %}

@@ -1,6 +1,7 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from models import db, Product, Review, Commission, Order, OrderItem
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from models import db, Product, Review, Commission, Order, OrderItem, ContactMessage
+from notifications import send_ready_email, send_ready_sms
 import razorpay
 import uuid
 from dotenv import load_dotenv
@@ -68,10 +69,22 @@ def commissions():
 def faq():
     return render_template('faq.html')
 
-@app.route('/checkout', methods=['GET', 'POST'])
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        message = request.form.get('message')
+        
+        contact_msg = ContactMessage(name=name, email=email, message=message)
+        db.session.add(contact_msg)
+        db.session.commit()
+        flash('Your message has been sent successfully!', 'success')
+        return redirect(url_for('contact'))
+    return render_template('contact.html')
+
+@app.route('/checkout', methods=['GET'])
 def checkout():
-    # In a real app, you would have a cart system.
-    # Here we are simulating a checkout for a specific product.
     product_id = request.args.get('product_id')
     size = request.args.get('size')
     
@@ -79,40 +92,76 @@ def checkout():
         return redirect(url_for('index'))
         
     product = Product.query.get_or_404(product_id)
+    # Pass key ID to frontend for Razorpay initialization
+    return render_template('checkout.html', product=product, size=size, razorpay_key_id=RAZORPAY_KEY_ID)
+
+@app.route('/api/create-order', methods=['POST'])
+def create_order():
+    data = request.json
+    product_id = data.get('product_id')
+    product = Product.query.get_or_404(product_id)
     
-    if request.method == 'POST':
-        customer_name = request.form.get('customer_name')
-        email = request.form.get('email')
-        shipping_address = request.form.get('shipping_address')
+    amount_in_paise = int(product.price * 100)
+    if amount_in_paise < 100:
+        return jsonify({'error': 'Amount too small'}), 400
         
-        tracking_id = str(uuid.uuid4())[:8].upper()
+    try:
+        order = rzp_client.order.create({
+            'amount': amount_in_paise,
+            'currency': 'INR',
+            'receipt': f'receipt_{uuid.uuid4().hex[:10]}'
+        })
+        return jsonify({'order_id': order['id'], 'amount': order['amount'], 'currency': order['currency']})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/verify-payment', methods=['POST'])
+def verify_payment():
+    data = request.json
+    razorpay_order_id = data.get('razorpay_order_id')
+    razorpay_payment_id = data.get('razorpay_payment_id')
+    razorpay_signature = data.get('razorpay_signature')
+    
+    if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
+        return jsonify({'error': 'Missing payment data'}), 400
         
-        order = Order(
-            customer_name=customer_name, 
-            email=email, 
-            shipping_address=shipping_address,
-            total_amount=product.price, # simplified
-            tracking_id=tracking_id
-        )
-        db.session.add(order)
-        db.session.flush() # to get order.id
+    try:
+        rzp_client.utility.verify_payment_signature({
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': razorpay_payment_id,
+            'razorpay_signature': razorpay_signature
+        })
+    except razorpay.errors.SignatureVerificationError:
+        return jsonify({'error': 'Signature verification failed'}), 400
         
-        order_item = OrderItem(
-            order_id=order.id,
-            product_id=product.id,
-            size=size or product.sizes.split(',')[0].strip(),
-            quantity=1,
-            price=product.price
-        )
-        db.session.add(order_item)
-        db.session.commit()
-        
-        # In a real app, initialize Razorpay payment here
-        # return render_template('payment.html', order=order, key_id=RAZORPAY_KEY_ID)
-        flash(f'Order placed successfully! Your tracking ID is {tracking_id}', 'success')
-        return redirect(url_for('track_order', tracking_id=tracking_id))
-        
-    return render_template('checkout.html', product=product, size=size)
+    product = Product.query.get_or_404(data.get('product_id'))
+    tracking_id = str(uuid.uuid4())[:8].upper()
+    
+    order = Order(
+        customer_name=data.get('customer_name'), 
+        email=data.get('email'), 
+        phone_number=data.get('phone_number'),
+        total_amount=product.price,
+        tracking_id=tracking_id,
+        razorpay_order_id=razorpay_order_id,
+        razorpay_payment_id=razorpay_payment_id,
+        razorpay_signature=razorpay_signature,
+        payment_status='Paid'
+    )
+    db.session.add(order)
+    db.session.flush()
+    
+    order_item = OrderItem(
+        order_id=order.id,
+        product_id=product.id,
+        size=data.get('size') or product.sizes.split(',')[0].strip(),
+        quantity=1,
+        price=product.price
+    )
+    db.session.add(order_item)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'tracking_id': tracking_id})
 
 @app.route('/track', methods=['GET'])
 def track_order():
@@ -162,6 +211,51 @@ def update_inventory(product_id):
     flash('Price updated!', 'success')
     return redirect(url_for('admin_inventory'))
 
+@app.route('/admin/inventory/add', methods=['POST'])
+def add_inventory():
+    if not check_admin(): return redirect(url_for('admin_login'))
+    name = request.form.get('name')
+    description = request.form.get('description')
+    price = request.form.get('price')
+    sizes = request.form.get('sizes')
+    image_paths = request.form.get('image_paths')
+    
+    product = Product(name=name, description=description, price=float(price), sizes=sizes, image_paths=image_paths)
+    db.session.add(product)
+    db.session.commit()
+    flash('Product added successfully!', 'success')
+    return redirect(url_for('admin_inventory'))
+
+@app.route('/admin/inventory/edit/<int:product_id>', methods=['GET', 'POST'])
+def edit_inventory(product_id):
+    if not check_admin(): return redirect(url_for('admin_login'))
+    product = Product.query.get_or_404(product_id)
+    if request.method == 'POST':
+        product.name = request.form.get('name')
+        product.description = request.form.get('description')
+        product.price = float(request.form.get('price'))
+        product.sizes = request.form.get('sizes')
+        product.image_paths = request.form.get('image_paths')
+        db.session.commit()
+        flash('Product updated successfully!', 'success')
+        return redirect(url_for('admin_inventory'))
+    return render_template('admin_product_edit.html', product=product)
+
+@app.route('/admin/inventory/delete/<int:product_id>', methods=['POST'])
+def delete_inventory(product_id):
+    if not check_admin(): return redirect(url_for('admin_login'))
+    product = Product.query.get_or_404(product_id)
+    db.session.delete(product)
+    db.session.commit()
+    flash('Product deleted!', 'success')
+    return redirect(url_for('admin_inventory'))
+
+@app.route('/admin/contacts')
+def admin_contacts():
+    if not check_admin(): return redirect(url_for('admin_login'))
+    messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+    return render_template('admin_contacts.html', messages=messages)
+
 @app.route('/admin/commissions')
 def admin_commissions():
     if not check_admin(): return redirect(url_for('admin_login'))
@@ -172,20 +266,27 @@ def admin_commissions():
 def admin_orders():
     if not check_admin(): return redirect(url_for('admin_login'))
     orders = Order.query.order_by(Order.created_at.desc()).all()
-    stages = ['Order Received', 'Prepping Board', 'Clay & Mirror Work', 'Drying', 'Shipped']
+    stages = ['Order Received', 'Prepping Board', 'Clay & Mirror Work', 'Drying', 'Ready for Pickup']
     return render_template('admin_orders.html', orders=orders, stages=stages)
 
 @app.route('/admin/orders/advance/<int:order_id>', methods=['POST'])
 def advance_order(order_id):
     if not check_admin(): return redirect(url_for('admin_login'))
     order = Order.query.get_or_404(order_id)
-    stages = ['Order Received', 'Prepping Board', 'Clay & Mirror Work', 'Drying', 'Shipped']
+    stages = ['Order Received', 'Prepping Board', 'Clay & Mirror Work', 'Drying', 'Ready for Pickup']
     
     current_idx = stages.index(order.status) if order.status in stages else 0
     if current_idx < len(stages) - 1:
         order.status = stages[current_idx + 1]
         db.session.commit()
         flash(f'Order advanced to {order.status}', 'success')
+        
+        # Trigger notifications if ready
+        if order.status == 'Ready for Pickup':
+            items_str = ", ".join([f"{item.quantity}x {item.product.name} ({item.size})" for item in order.items])
+            send_ready_email(order.email, order.customer_name, items_str)
+            send_ready_sms(order.phone_number, order.customer_name)
+            
     return redirect(url_for('admin_orders'))
 
 # --- SETUP ---

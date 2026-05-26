@@ -16,13 +16,14 @@
 <body>
     <div class="admin-nav">
         <div style="font-size: 1.5rem; font-weight: bold;">Lippan Art Admin</div>
-        <div>
-            <a href="{{ url_for('admin_inventory') }}">Inventory & Pricing</a>
-            <a href="{{ url_for('admin_commissions') }}">Commissions Inbox</a>
-            <a href="{{ url_for('admin_orders') }}">Order Management</a>
-            <a href="{{ url_for('index') }}" target="_blank">View Live Site</a>
-            <a href="{{ url_for('admin_logout') }}" style="color: #e74c3c;">Logout</a>
-        </div>
+            <div class="links">
+                <a href="{{ url_for('admin_inventory') }}">Inventory & Pricing</a>
+                <a href="{{ url_for('admin_commissions') }}">Commissions Inbox</a>
+                <a href="{{ url_for('admin_contacts') }}">Contacts Inbox</a>
+                <a href="{{ url_for('admin_orders') }}">Order Management</a>
+                <a href="{{ url_for('index') }}" target="_blank">View Live Site</a>
+                <a href="{{ url_for('admin_logout') }}" style="color: #e74c3c;">Logout</a>
+            </div>
     </div>
 
     <div class="container">
