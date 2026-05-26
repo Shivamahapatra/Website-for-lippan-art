@@ -1,0 +1,5 @@
+venv/
+__pycache__/
+*.pyc
+.env
+lippan_art.db
