@@ -10,7 +10,7 @@ class Product(db.Model):
     description = db.Column(db.Text, nullable=False)
     price = db.Column(db.Float, nullable=False)
     sizes = db.Column(db.String(200), nullable=False) # e.g., "12x12, 18x18, 24x24"
-    image_paths = db.Column(db.String(500), nullable=False) # comma separated paths
+    image_paths = db.Column(db.Text, nullable=False) # Text supports unlimited length for Base64
     
     reviews = db.relationship('Review', backref='product', lazy=True)
 
