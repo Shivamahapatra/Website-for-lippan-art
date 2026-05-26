@@ -1,4 +1,5 @@
 import os
+import base64
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from models import db, Product, Review, Commission, Order, OrderItem, ContactMessage
 from notifications import send_ready_email, send_ready_sms
@@ -224,7 +225,18 @@ def add_inventory():
     description = request.form.get('description')
     price = request.form.get('price')
     sizes = request.form.get('sizes')
-    image_paths = request.form.get('image_paths')
+    
+    image_paths = "default.jpg"
+    image_file = request.files.get('image_file')
+    if image_file and image_file.filename:
+        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+        mime_type = image_file.content_type or 'image/jpeg'
+        image_paths = f"data:{mime_type};base64,{encoded_string}"
+    else:
+        # Fallback to old text input if they used it
+        fallback_path = request.form.get('image_paths')
+        if fallback_path:
+            image_paths = fallback_path
     
     product = Product(name=name, description=description, price=float(price), sizes=sizes, image_paths=image_paths)
     db.session.add(product)
@@ -241,7 +253,13 @@ def edit_inventory(product_id):
         product.description = request.form.get('description')
         product.price = float(request.form.get('price'))
         product.sizes = request.form.get('sizes')
-        product.image_paths = request.form.get('image_paths')
+        
+        image_file = request.files.get('image_file')
+        if image_file and image_file.filename:
+            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            mime_type = image_file.content_type or 'image/jpeg'
+            product.image_paths = f"data:{mime_type};base64,{encoded_string}"
+            
         db.session.commit()
         flash('Product updated successfully!', 'success')
         return redirect(url_for('admin_inventory'))

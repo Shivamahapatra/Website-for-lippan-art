@@ -3,13 +3,12 @@
 {% block content %}
 <div class="product-detail">
     <div class="product-detail-img">
-        <!-- Using gradient placeholder for zoom effect demonstration -->
-        <div style="width: 100%; padding-top: 100%; position: relative;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(45deg, var(--secondary-color), var(--secondary-color) 10px, var(--accent-color) 10px, var(--accent-color) 20px); transition: transform 0.1s; display: flex; align-items: center; justify-content: center; color: white;">
-                <img src="" alt="" style="display:none;">
-                <span style="font-size: 2rem; transform: scale(0.5); /* counter zoom for text */">Hover to Zoom Art Details</span>
-            </div>
-        </div>
+        {% set img_path = product.image_paths.split(',')[0].strip() %}
+        {% if img_path.startswith('data:') or img_path.startswith('http') %}
+            <img src="{{ img_path }}" alt="{{ product.name }}" style="width: 100%; border-radius: 10px;">
+        {% else %}
+            <img src="{{ url_for('static', filename='images/' + img_path) }}" alt="{{ product.name }}" style="width: 100%; border-radius: 10px;">
+        {% endif %}
     </div>
     
     <div class="product-detail-info">
