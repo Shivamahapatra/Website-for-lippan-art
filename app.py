@@ -227,18 +227,19 @@ def add_inventory():
     sizes = request.form.get('sizes')
     
     image_paths = "default.jpg"
+    image_base64 = None
     image_file = request.files.get('image_file')
     if image_file and image_file.filename:
         encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
         mime_type = image_file.content_type or 'image/jpeg'
-        image_paths = f"data:{mime_type};base64,{encoded_string}"
+        image_base64 = f"data:{mime_type};base64,{encoded_string}"
     else:
         # Fallback to old text input if they used it
         fallback_path = request.form.get('image_paths')
         if fallback_path:
             image_paths = fallback_path
     
-    product = Product(name=name, description=description, price=float(price), sizes=sizes, image_paths=image_paths)
+    product = Product(name=name, description=description, price=float(price), sizes=sizes, image_paths=image_paths, image_base64=image_base64)
     db.session.add(product)
     db.session.commit()
     flash('Product added successfully!', 'success')
@@ -258,7 +259,7 @@ def edit_inventory(product_id):
         if image_file and image_file.filename:
             encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
             mime_type = image_file.content_type or 'image/jpeg'
-            product.image_paths = f"data:{mime_type};base64,{encoded_string}"
+            product.image_base64 = f"data:{mime_type};base64,{encoded_string}"
             
         db.session.commit()
         flash('Product updated successfully!', 'success')

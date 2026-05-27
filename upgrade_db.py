@@ -21,9 +21,16 @@ with app.app_context():
         except:
             db.session.rollback()
 
-        # Change image_paths to TEXT for Base64
+        # Change image_paths to TEXT for Base64 (Might fail on Postgres)
         try:
             db.session.execute(text('ALTER TABLE product ALTER COLUMN image_paths TYPE TEXT;'))
+            db.session.commit()
+        except:
+            db.session.rollback()
+            
+        # Add a new dedicated Base64 column (Guaranteed to work)
+        try:
+            db.session.execute(text('ALTER TABLE product ADD COLUMN image_base64 TEXT;'))
             db.session.commit()
         except:
             db.session.rollback()

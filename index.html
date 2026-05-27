@@ -11,7 +11,9 @@
 <div class="product-grid">
     {% for product in products %}
     <div class="product-card" onclick="window.location='{{ url_for('product', product_id=product.id) }}'" style="cursor: pointer;">
-        {% if product.image_paths.startswith('data:') %}
+        {% if product.image_base64 %}
+            <img src="{{ product.image_base64 }}" alt="{{ product.name }}">
+        {% elif product.image_paths.startswith('data:') %}
             <img src="{{ product.image_paths }}" alt="{{ product.name }}">
         {% else %}
             {% set img_path = product.image_paths.split(',')[0].strip() %}

@@ -3,7 +3,9 @@
 {% block content %}
 <div class="product-detail">
     <div class="product-detail-img">
-        {% if product.image_paths.startswith('data:') %}
+        {% if product.image_base64 %}
+            <img src="{{ product.image_base64 }}" alt="{{ product.name }}" style="width: 100%; border-radius: 10px;">
+        {% elif product.image_paths.startswith('data:') %}
             <img src="{{ product.image_paths }}" alt="{{ product.name }}" style="width: 100%; border-radius: 10px;">
         {% else %}
             {% set img_path = product.image_paths.split(',')[0].strip() %}
