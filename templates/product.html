@@ -22,7 +22,7 @@
         <div class="price">₹{{ product.price }}</div>
         <p style="margin-bottom: 2rem; color: #555;">{{ product.description }}</p>
         
-        <form action="{{ url_for('checkout') }}" method="GET">
+        <form action="/cart/add" method="POST">
             <input type="hidden" name="product_id" value="{{ product.id }}">
             <div class="form-group">
                 <label for="size">Select Size</label>
@@ -32,7 +32,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Buy Now</button>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Add to Cart</button>
         </form>
     </div>
 </div>

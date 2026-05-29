@@ -13,9 +13,10 @@
         <div class="links">
             <a href="{{ url_for('index') }}">Gallery</a>
             <a href="{{ url_for('commissions') }}">Custom Commissions</a>
-            <a href="{{ url_for('faq') }}">FAQ</a>
-            <a href="{{ url_for('contact') }}">Contact Us</a>
-            <a href="{{ url_for('track_order') }}">Track Order</a>
+            <a href="/faq">FAQ</a>
+            <a href="/contact">Contact Us</a>
+            <a href="/track">Track Order</a>
+            <a href="/cart" style="font-weight: bold; color: var(--primary-color);">Cart ({{ session.get('cart', [])|length }})</a>
         </div>
     </nav>
 

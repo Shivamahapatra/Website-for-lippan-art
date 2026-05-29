@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h1 style="color: var(--primary-color); margin-bottom: 2rem; text-align: center;">Your Cart</h1>
+    
+    {% if cart_items %}
+        <div style="background: #fff; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            {% for item in cart_items %}
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <img src="{{ item.image }}" alt="{{ item.name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
+                        <div>
+                            <h3 style="margin: 0 0 0.5rem 0;">{{ item.name }}</h3>
+                            <p style="margin: 0; color: #666;">Size: {{ item.size }}</p>
+                            <p style="margin: 0; color: #666;">Qty: {{ item.quantity }}</p>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="margin: 0 0 0.5rem 0; font-weight: bold; font-size: 1.1rem;">₹{{ item.price * item.quantity }}</p>
+                        <form action="{{ url_for('remove_from_cart', index=loop.index0) }}" method="POST" style="margin: 0;">
+                            <button type="submit" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 0.9rem; text-decoration: underline;">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <div style="text-align: right; margin-top: 2rem;">
+                <h2 style="margin-bottom: 1rem;">Total: ₹{{ total }}</h2>
+                <a href="{{ url_for('checkout') }}" class="btn" style="padding: 1rem 2rem; font-size: 1.1rem;">Proceed to Checkout</a>
+            </div>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 3rem; background: #fff; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <h2>Your cart is empty</h2>
+            <p style="color: #666; margin-bottom: 2rem;">Looks like you haven't added anything to your cart yet.</p>
+            <a href="{{ url_for('index') }}" class="btn">Browse Gallery</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

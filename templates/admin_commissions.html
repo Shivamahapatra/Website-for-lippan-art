@@ -24,6 +24,11 @@
         <p style="margin: 0;"><strong>Details:</strong></p>
         <p style="background: #f9f9f9; padding: 1rem; border-radius: 5px; margin-top: 0.5rem; white-space: pre-wrap;">{{ commission.details }}</p>
         
+        {% if commission.reference_image_base64 %}
+        <p style="margin: 1rem 0 0.5rem 0;"><strong>Reference Image:</strong></p>
+        <img src="{{ commission.reference_image_base64 }}" style="max-width: 300px; border-radius: 10px; border: 1px solid #ddd;">
+        {% endif %}
+        
         <div style="margin-top: 1rem;">
             <a href="mailto:{{ commission.email }}?subject=Re: Your Lippan Art Commission" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Reply via Email</a>
         </div>

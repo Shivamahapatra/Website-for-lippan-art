@@ -6,8 +6,11 @@
     
     <div style="background: var(--bg-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
         <h3 style="margin-bottom: 0.5rem;">Order Summary</h3>
-        <p style="margin: 0;"><strong>Product:</strong> {{ product.name }} ({{ size }})</p>
-        <p style="margin: 0;"><strong>Price:</strong> ₹{{ product.price }}</p>
+        {% for item in cart_items %}
+        <p style="margin: 0; padding-bottom: 0.2rem;"><strong>{{ item.quantity }}x {{ item.name }}</strong> ({{ item.size }}) - ₹{{ item.price * item.quantity }}</p>
+        {% endfor %}
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 1rem 0;">
+        <p style="margin: 0; font-size: 1.2rem;"><strong>Total:</strong> ₹{{ total }}</p>
     </div>
 
     <form id="checkout-form">
@@ -29,7 +32,7 @@
         </div>
         
         <button type="button" id="pay-btn" class="btn" style="width: 100%; font-size: 1.1rem; padding: 1rem; background-color: #2b80ff;">
-            Pay Securely with Razorpay (₹{{ product.price }})
+            Pay Securely with Razorpay (₹{{ total }})
         </button>
     </form>
 </div>
@@ -55,14 +58,14 @@ document.getElementById('pay-btn').onclick = async function(e) {
         const createRes = await fetch('/api/create-order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ product_id: '{{ product.id }}' })
+            body: JSON.stringify({})
         });
         const orderData = await createRes.json();
         
         if (orderData.error) {
             alert("Error creating order: " + orderData.error);
             btn.disabled = false;
-            btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+            btn.innerText = 'Pay Securely with Razorpay (₹{{ total }})';
             return;
         }
 
@@ -72,7 +75,7 @@ document.getElementById('pay-btn').onclick = async function(e) {
             "amount": orderData.amount,
             "currency": orderData.currency,
             "name": "Her Lippan Art",
-            "description": "{{ product.name }}",
+            "description": "Cart Checkout",
             "order_id": orderData.order_id,
             "handler": async function (response) {
                 // 3. Verify Payment Signature on Backend
@@ -85,9 +88,7 @@ document.getElementById('pay-btn').onclick = async function(e) {
                         razorpay_signature: response.razorpay_signature,
                         customer_name: form.customer_name.value,
                         email: form.email.value,
-                        phone_number: form.phone_number.value,
-                        product_id: '{{ product.id }}',
-                        size: '{{ size }}'
+                        phone_number: form.phone_number.value
                     })
                 });
                 const verifyData = await verifyRes.json();
@@ -97,7 +98,7 @@ document.getElementById('pay-btn').onclick = async function(e) {
                 } else {
                     alert("Payment verification failed: " + verifyData.error);
                     btn.disabled = false;
-                    btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+                    btn.innerText = 'Pay Securely with Razorpay (₹{{ total }})';
                 }
             },
             "prefill": {
@@ -111,7 +112,7 @@ document.getElementById('pay-btn').onclick = async function(e) {
             "modal": {
                 "ondismiss": function() {
                     btn.disabled = false;
-                    btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+                    btn.innerText = 'Pay Securely with Razorpay (₹{{ total }})';
                 }
             }
         };
@@ -119,13 +120,13 @@ document.getElementById('pay-btn').onclick = async function(e) {
         rzp.on('payment.failed', function (response){
             alert("Payment Failed: " + response.error.description);
             btn.disabled = false;
-            btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+            btn.innerText = 'Pay Securely with Razorpay (₹{{ total }})';
         });
         rzp.open();
     } catch (err) {
         alert("An unexpected error occurred: " + err.message);
         btn.disabled = false;
-        btn.innerText = 'Pay Securely with Razorpay (₹{{ product.price }})';
+        btn.innerText = 'Pay Securely with Razorpay (₹{{ total }})';
     }
 }
 </script>
