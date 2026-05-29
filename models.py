@@ -29,6 +29,7 @@ class Commission(db.Model):
     email = db.Column(db.String(120), nullable=False)
     details = db.Column(db.Text, nullable=False)
     size_requested = db.Column(db.String(50), nullable=True)
+    reference_image_base64 = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(50), default='New') # New, Reviewed, Accepted, Completed
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

@@ -65,7 +65,14 @@ def commissions():
         details = request.form.get('details')
         size_requested = request.form.get('size_requested')
         
-        commission = Commission(customer_name=customer_name, email=email, details=details, size_requested=size_requested)
+        reference_image_base64 = None
+        image_file = request.files.get('image_file')
+        if image_file and image_file.filename:
+            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            mime_type = image_file.content_type or 'image/jpeg'
+            reference_image_base64 = f"data:{mime_type};base64,{encoded_string}"
+        
+        commission = Commission(customer_name=customer_name, email=email, details=details, size_requested=size_requested, reference_image_base64=reference_image_base64)
         db.session.add(commission)
         db.session.commit()
         flash('Your commission request has been received. We will get back to you soon!', 'success')
@@ -90,25 +97,79 @@ def contact():
         return redirect(url_for('contact'))
     return render_template('contact.html')
 
+@app.route('/cart', methods=['GET'])
+def cart():
+    cart_items = session.get('cart', [])
+    total = sum(item['price'] * item['quantity'] for item in cart_items)
+    return render_template('cart.html', cart_items=cart_items, total=total)
+
+@app.route('/cart/add', methods=['POST'])
+def add_to_cart():
+    product_id = request.form.get('product_id')
+    size = request.form.get('size')
+    
+    product = Product.query.get_or_404(product_id)
+    cart_items = session.get('cart', [])
+    
+    # Check if already in cart
+    found = False
+    for item in cart_items:
+        if str(item['product_id']) == str(product_id) and item['size'] == size:
+            item['quantity'] += 1
+            found = True
+            break
+            
+    if not found:
+        # Use image_base64 if available, otherwise first image_path
+        img = product.image_base64
+        if not img:
+            img_path = product.image_paths.split(',')[0].strip()
+            if img_path.startswith('data:') or img_path.startswith('http'):
+                img = img_path
+            else:
+                img = url_for('static', filename='images/' + img_path)
+                
+        cart_items.append({
+            'product_id': product.id,
+            'name': product.name,
+            'size': size,
+            'price': product.price,
+            'quantity': 1,
+            'image': img
+        })
+        
+    session['cart'] = cart_items
+    flash(f'{product.name} added to your cart!', 'success')
+    return redirect(url_for('cart'))
+
+@app.route('/cart/remove/<int:index>', methods=['POST'])
+def remove_from_cart(index):
+    cart_items = session.get('cart', [])
+    if 0 <= index < len(cart_items):
+        item = cart_items.pop(index)
+        session['cart'] = cart_items
+        flash(f"{item['name']} removed from cart.", 'info')
+    return redirect(url_for('cart'))
+
 @app.route('/checkout', methods=['GET'])
 def checkout():
-    product_id = request.args.get('product_id')
-    size = request.args.get('size')
-    
-    if not product_id:
+    cart_items = session.get('cart', [])
+    if not cart_items:
+        flash('Your cart is empty.', 'error')
         return redirect(url_for('index'))
         
-    product = Product.query.get_or_404(product_id)
-    # Pass key ID to frontend for Razorpay initialization
-    return render_template('checkout.html', product=product, size=size, razorpay_key_id=RAZORPAY_KEY_ID)
+    total = sum(item['price'] * item['quantity'] for item in cart_items)
+    return render_template('checkout.html', cart_items=cart_items, total=total, razorpay_key_id=RAZORPAY_KEY_ID)
 
 @app.route('/api/create-order', methods=['POST'])
 def create_order():
-    data = request.json
-    product_id = data.get('product_id')
-    product = Product.query.get_or_404(product_id)
+    cart_items = session.get('cart', [])
+    if not cart_items:
+        return jsonify({'error': 'Cart is empty'}), 400
+        
+    total = sum(item['price'] * item['quantity'] for item in cart_items)
+    amount_in_paise = int(total * 100)
     
-    amount_in_paise = int(product.price * 100)
     if amount_in_paise < 100:
         return jsonify({'error': 'Amount too small'}), 400
         
@@ -141,14 +202,18 @@ def verify_payment():
     except razorpay.errors.SignatureVerificationError:
         return jsonify({'error': 'Signature verification failed'}), 400
         
-    product = Product.query.get_or_404(data.get('product_id'))
+    cart_items = session.get('cart', [])
+    if not cart_items:
+        return jsonify({'error': 'Cart is empty'}), 400
+        
+    total = sum(item['price'] * item['quantity'] for item in cart_items)
     tracking_id = str(uuid.uuid4())[:8].upper()
     
     order = Order(
         customer_name=data.get('customer_name'), 
         email=data.get('email'), 
         phone_number=data.get('phone_number'),
-        total_amount=product.price,
+        total_amount=total,
         tracking_id=tracking_id,
         razorpay_order_id=razorpay_order_id,
         razorpay_payment_id=razorpay_payment_id,
@@ -158,15 +223,20 @@ def verify_payment():
     db.session.add(order)
     db.session.flush()
     
-    order_item = OrderItem(
-        order_id=order.id,
-        product_id=product.id,
-        size=data.get('size') or product.sizes.split(',')[0].strip(),
-        quantity=1,
-        price=product.price
-    )
-    db.session.add(order_item)
+    for item in cart_items:
+        order_item = OrderItem(
+            order_id=order.id,
+            product_id=item['product_id'],
+            size=item['size'],
+            quantity=item['quantity'],
+            price=item['price']
+        )
+        db.session.add(order_item)
+        
     db.session.commit()
+    
+    # Clear the cart after successful order
+    session.pop('cart', None)
     
     return jsonify({'success': True, 'tracking_id': tracking_id})
 
