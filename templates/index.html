@@ -11,11 +11,17 @@
 <div class="product-grid">
     {% for product in products %}
     <div class="product-card" onclick="window.location='{{ url_for('product', product_id=product.id) }}'" style="cursor: pointer;">
-        {% set img_path = product.image_paths.split(',')[0].strip() %}
-        {% if img_path.startswith('data:') or img_path.startswith('http') %}
-            <img src="{{ img_path }}" alt="{{ product.name }}">
+        {% if product.image_base64 %}
+            <img src="{{ product.image_base64 }}" alt="{{ product.name }}">
+        {% elif product.image_paths.startswith('data:') %}
+            <img src="{{ product.image_paths }}" alt="{{ product.name }}">
         {% else %}
-            <img src="{{ url_for('static', filename='images/' + img_path) }}" alt="{{ product.name }}">
+            {% set img_path = product.image_paths.split(',')[0].strip() %}
+            {% if img_path.startswith('http') %}
+                <img src="{{ img_path }}" alt="{{ product.name }}">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/' + img_path) }}" alt="{{ product.name }}">
+            {% endif %}
         {% endif %}
         <div class="product-info">
             <div class="product-title">{{ product.name }}</div>
