@@ -37,8 +37,32 @@ rzp_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 @app.route('/')
 def index():
-    products = Product.query.all()
-    return render_template('index.html', products=products)
+    sort_by = request.args.get('sort', 'newest')
+    filter_size = request.args.get('size', '')
+
+    query = Product.query
+
+    if filter_size:
+        query = query.filter(Product.sizes.ilike(f'%{filter_size}%'))
+        
+    if sort_by == 'price_asc':
+        query = query.order_by(Product.price.asc())
+    elif sort_by == 'price_desc':
+        query = query.order_by(Product.price.desc())
+    else:
+        query = query.order_by(Product.id.desc())
+        
+    products = query.all()
+    
+    # Extract unique sizes for the filter dropdown
+    all_products = Product.query.all()
+    unique_sizes = set()
+    for p in all_products:
+        if p.sizes:
+            sizes_list = [s.strip() for s in p.sizes.split(',')]
+            unique_sizes.update(sizes_list)
+            
+    return render_template('index.html', products=products, unique_sizes=sorted(list(unique_sizes)), current_sort=sort_by, current_size=filter_size)
 
 @app.route('/product/<int:product_id>')
 def product(product_id):
