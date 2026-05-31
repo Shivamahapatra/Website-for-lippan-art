@@ -8,6 +8,33 @@
     </p>
 </div>
 
+<div style="max-width: 1200px; margin: 0 auto 2rem auto; padding: 1rem; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+    <form method="GET" action="{{ url_for('index') }}" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+            <label for="size" style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: #555;">Filter by Size:</label>
+            <select name="size" id="size" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
+                <option value="">All Sizes</option>
+                {% for size in unique_sizes %}
+                <option value="{{ size }}" {% if current_size == size %}selected{% endif %}>{{ size }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div style="flex: 1; min-width: 200px;">
+            <label for="sort" style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: #555;">Sort by Price:</label>
+            <select name="sort" id="sort" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
+                <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
+                <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+            </select>
+        </div>
+        
+        <div>
+            <button type="submit" class="btn" style="padding: 0.8rem 2rem;">Apply Filters</button>
+        </div>
+    </form>
+</div>
+
 <div class="product-grid">
     {% for product in products %}
     <div class="product-card" onclick="window.location='{{ url_for('product', product_id=product.id) }}'" style="cursor: pointer;">
