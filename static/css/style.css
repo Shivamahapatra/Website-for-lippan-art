@@ -277,3 +277,42 @@ nav .links a:hover {
   font-weight: 600;
   color: var(--primary-color);
 }
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  nav .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  nav .links a {
+    margin-left: 0;
+    font-size: 0.9rem;
+  }
+
+  .product-detail {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .product-detail-info h1 {
+    font-size: 2rem !important;
+  }
+  
+  .container {
+    padding: 1rem 5%;
+  }
+  
+  .admin-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
