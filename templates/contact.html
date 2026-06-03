@@ -1,28 +1,57 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Contact Us</h2>
-<p>Have a question or want to get in touch? Send us a message!</p>
-<div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; max-width: 600px;">
-    <strong>Direct Contacts:</strong><br>
-    📞 7899214104 (Mom)<br>
-    📞 9384851109
+<div style="max-width: 800px; margin: 0 auto; text-align: center; margin-bottom: 2rem;">
+    <h1 style="color: var(--primary-color); font-size: 2.5rem; margin-bottom: 1rem;">Get In Touch</h1>
+    <p style="color: #666; font-size: 1.1rem;">Have a question about a piece or just want to say hi? We'd love to hear from you.</p>
 </div>
 
-<form method="POST" action="{{ url_for('contact') }}" class="form-container" style="max-width: 600px;">
-    <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" name="name" required>
-    </div>
-    <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" name="email" required>
-    </div>
-    <div class="form-group">
-        <label>Message</label>
-        <textarea name="message" rows="6" required></textarea>
-    </div>
+<div style="display: flex; flex-wrap: wrap; gap: 2rem; max-width: 1000px; margin: 0 auto;">
     
-    <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Send Message</button>
-</form>
+    <!-- Contact Info Card -->
+    <div style="flex: 1; min-width: 300px; background: #fff; padding: 2.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;">
+        <h3 style="color: var(--primary-color); margin-bottom: 1.5rem; font-size: 1.5rem;">Direct Contact</h3>
+        
+        <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+            <div style="background: var(--bg-color); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 1rem; color: var(--primary-color);">
+                📞
+            </div>
+            <div>
+                <p style="margin: 0; font-weight: bold; color: var(--text-color);">Call Us (Mom)</p>
+                <p style="margin: 0; color: #666;">+91 78992 14104</p>
+            </div>
+        </div>
+        
+        <div style="display: flex; align-items: center;">
+            <div style="background: var(--bg-color); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 1rem; color: var(--primary-color);">
+                📞
+            </div>
+            <div>
+                <p style="margin: 0; font-weight: bold; color: var(--text-color);">Call Us (Alternate)</p>
+                <p style="margin: 0; color: #666;">+91 93848 51109</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div style="flex: 2; min-width: 300px; background: #fff; padding: 2.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Send a Message</h3>
+        <form method="POST" action="{{ url_for('contact') }}">
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" name="name" placeholder="John Doe" required>
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="john@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea name="message" rows="5" placeholder="How can we help you?" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem;">Send Message</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
