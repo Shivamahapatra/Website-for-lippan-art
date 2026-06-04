@@ -20,15 +20,64 @@
             <label>Desired Size (e.g., 36x24 inches) - Optional</label>
             <input type="text" name="size_requested">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="width: 100%;">
             <label>Reference Image (Optional)</label>
-            <input type="file" name="image_file" accept="image/*">
+            <input type="file" accept="image/*" id="addImage" onchange="uploadToCloudinary(this)">
+            <input type="hidden" name="cloudinary_url" id="cloudinaryUrl">
+            <small id="uploadStatus" style="color: #666;">Select a reference image to upload.</small>
         </div>
         <div class="form-group">
             <label>Design Details & Ideas</label>
             <textarea name="details" rows="6" placeholder="Describe the pattern, colors, or any specific requirements (like 'Family Nameplate')..." required></textarea>
         </div>
-        <button type="submit" class="btn" style="width: 100%;">Submit Request</button>
+        <button type="submit" id="submitBtn" class="btn" style="width: 100%;">Submit Request</button>
     </form>
 </div>
+
+<script>
+async function uploadToCloudinary(input) {
+    if (!input.files || !input.files[0]) return;
+    
+    const file = input.files[0];
+    const statusText = document.getElementById('uploadStatus');
+    const submitBtn = document.getElementById('submitBtn');
+    const hiddenUrl = document.getElementById('cloudinaryUrl');
+    
+    statusText.innerText = "Uploading to Cloudinary... Please wait.";
+    statusText.style.color = "#e67e22";
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Uploading Image...";
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'lippan_art');
+    
+    try {
+        const response = await fetch('https://api.cloudinary.com/v1_1/dnl5901jw/image/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.secure_url) {
+            hiddenUrl.value = data.secure_url;
+            statusText.innerText = "Image uploaded successfully!";
+            statusText.style.color = "#27ae60";
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Request";
+        } else {
+            statusText.innerText = "Upload failed: " + (data.error ? data.error.message : "Unknown error");
+            statusText.style.color = "red";
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Request";
+        }
+    } catch (error) {
+        statusText.innerText = "Network error during upload.";
+        statusText.style.color = "red";
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Request";
+    }
+}
+</script>
 {% endblock %}
