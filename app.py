@@ -337,11 +337,11 @@ def add_inventory():
             encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
             mime_type = image_file.content_type or 'image/jpeg'
             image_base64 = f"data:{mime_type};base64,{encoded_string}"
-    else:
-        # Fallback to old text input if they used it
-        fallback_path = request.form.get('image_paths')
-        if fallback_path:
-            image_paths = fallback_path
+        else:
+            # Fallback to old text input if they used it
+            fallback_path = request.form.get('image_paths')
+            if fallback_path:
+                image_paths = fallback_path
     
     product = Product(name=name, description=description, price=float(price), sizes=sizes, image_paths=image_paths, image_base64=image_base64)
     db.session.add(product)
