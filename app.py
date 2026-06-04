@@ -90,11 +90,16 @@ def commissions():
         size_requested = request.form.get('size_requested')
         
         reference_image_base64 = None
-        image_file = request.files.get('image_file')
-        if image_file and image_file.filename:
-            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-            mime_type = image_file.content_type or 'image/jpeg'
-            reference_image_base64 = f"data:{mime_type};base64,{encoded_string}"
+        cloudinary_url = request.form.get('cloudinary_url')
+        if cloudinary_url:
+            reference_image_base64 = cloudinary_url
+        else:
+            # Fallback for old forms if any
+            image_file = request.files.get('image_file')
+            if image_file and image_file.filename:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                mime_type = image_file.content_type or 'image/jpeg'
+                reference_image_base64 = f"data:{mime_type};base64,{encoded_string}"
         
         commission = Commission(customer_name=customer_name, email=email, details=details, size_requested=size_requested, reference_image_base64=reference_image_base64)
         db.session.add(commission)
@@ -322,11 +327,16 @@ def add_inventory():
     
     image_paths = "default.jpg"
     image_base64 = None
-    image_file = request.files.get('image_file')
-    if image_file and image_file.filename:
-        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-        mime_type = image_file.content_type or 'image/jpeg'
-        image_base64 = f"data:{mime_type};base64,{encoded_string}"
+    cloudinary_url = request.form.get('cloudinary_url')
+    if cloudinary_url:
+        image_base64 = cloudinary_url
+    else:
+        # Fallback for old base64
+        image_file = request.files.get('image_file')
+        if image_file and image_file.filename:
+            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            mime_type = image_file.content_type or 'image/jpeg'
+            image_base64 = f"data:{mime_type};base64,{encoded_string}"
     else:
         # Fallback to old text input if they used it
         fallback_path = request.form.get('image_paths')
@@ -349,11 +359,15 @@ def edit_inventory(product_id):
         product.price = float(request.form.get('price'))
         product.sizes = request.form.get('sizes')
         
-        image_file = request.files.get('image_file')
-        if image_file and image_file.filename:
-            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-            mime_type = image_file.content_type or 'image/jpeg'
-            product.image_base64 = f"data:{mime_type};base64,{encoded_string}"
+        cloudinary_url = request.form.get('cloudinary_url')
+        if cloudinary_url:
+            product.image_base64 = cloudinary_url
+        else:
+            image_file = request.files.get('image_file')
+            if image_file and image_file.filename:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                mime_type = image_file.content_type or 'image/jpeg'
+                product.image_base64 = f"data:{mime_type};base64,{encoded_string}"
             
         db.session.commit()
         flash('Product updated successfully!', 'success')
