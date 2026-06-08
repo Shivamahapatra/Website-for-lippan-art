@@ -447,7 +447,7 @@ def setup_database():
             db.session.commit()
 
 # Run this via a separate script for Render, not at the module level!
-# setup_database()
+setup_database()
 
 if __name__ == '__main__':
     app.run(debug=True)
