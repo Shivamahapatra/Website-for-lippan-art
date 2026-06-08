@@ -8,6 +8,7 @@ import razorpay
 import uuid
 from werkzeug.exceptions import HTTPException
 import traceback
+from dotenv import load_dotenv
 
 load_dotenv() # Load variables from .env if present
 
@@ -33,7 +34,6 @@ db.init_app(app)
 # Razorpay setup
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', 'test_key_id')
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', 'test_key_secret')
-rzp_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 rzp_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 # --- DEBUGGING ROUTE ---
