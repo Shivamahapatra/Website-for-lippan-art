@@ -5,7 +5,8 @@ from models import db, Product, Review, Commission, Order, OrderItem, ContactMes
 from notifications import send_ready_email, send_ready_sms
 import razorpay
 import uuid
-from dotenv import load_dotenv
+from werkzeug.exceptions import HTTPException
+import traceback
 
 load_dotenv() # Load variables from .env if present
 
@@ -32,6 +33,16 @@ db.init_app(app)
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', 'test_key_id')
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', 'test_key_secret')
 rzp_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+rzp_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+# --- DEBUGGING ROUTE ---
+@app.errorhandler(Exception)
+def handle_exception(e):
+    if isinstance(e, HTTPException):
+        return e
+    
+    tb = traceback.format_exc()
+    return f"<h1>Internal Error Occurred</h1><pre>{tb}</pre>", 500
 
 # --- STOREFRONT ROUTES ---
 
