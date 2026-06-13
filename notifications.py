@@ -37,6 +37,59 @@ def send_ready_email(customer_email, customer_name, order_details):
         print(f"Failed to send email: {e}")
         return False
 
+def send_receipt_email(customer_email, customer_name, tracking_id, cart_items, total):
+    EMAIL_USER = os.getenv('EMAIL_USER')
+    EMAIL_PASS = os.getenv('EMAIL_PASS')
+
+    if not EMAIL_USER or not EMAIL_PASS:
+        print("--- MOCK RECEIPT EMAIL ---")
+        print(f"To: {customer_email}")
+        print(f"Subject: Order Confirmation - Her Lippan Art")
+        print("--------------------------")
+        return False
+
+    msg = EmailMessage()
+    msg['Subject'] = 'Order Confirmation - Her Lippan Art'
+    msg['From'] = EMAIL_USER
+    msg['To'] = customer_email
+
+    items_html = "".join([f"<li>{item['quantity']}x {item['name']} ({item['size']}) - ₹{item['price'] * item['quantity']}</li>" for item in cart_items])
+    
+    html_content = f"""
+    <html>
+      <body style="font-family: Arial, sans-serif; color: #333;">
+        <h2 style="color: #e67e22;">Thank You For Your Order!</h2>
+        <p>Hi {customer_name},</p>
+        <p>We have successfully received your payment of <strong>₹{total}</strong>.</p>
+        
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Order Summary</h3>
+            <ul>{items_html}</ul>
+            <p style="font-size: 1.2em;"><strong>Total: ₹{total}</strong></p>
+        </div>
+        
+        <p>Your tracking ID is: <strong><span style="font-size: 1.2em; color: #2980b9;">{tracking_id}</span></strong></p>
+        <p>We will notify you as soon as your order is ready for pickup.</p>
+        <br>
+        <p>Best regards,<br>Her Lippan Art</p>
+      </body>
+    </html>
+    """
+    
+    msg.set_content("Thank you for your order! Please enable HTML to view this receipt.")
+    msg.add_alternative(html_content, subtype='html')
+
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.login(EMAIL_USER, EMAIL_PASS)
+        server.send_message(msg)
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Failed to send receipt email: {e}")
+        return False
+
+
 def send_ready_sms(customer_phone, customer_name):
     TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
     TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')

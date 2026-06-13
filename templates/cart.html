@@ -7,22 +7,27 @@
     {% if cart_items %}
         <div style="background: #fff; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
             {% for item in cart_items %}
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <img src="{{ item.image }}" alt="{{ item.name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
-                        <div>
-                            <h3 style="margin: 0 0 0.5rem 0;">{{ item.name }}</h3>
-                            <p style="margin: 0; color: #666;">Size: {{ item.size }}</p>
-                            <p style="margin: 0; color: #666;">Qty: {{ item.quantity }}</p>
+                    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <img src="{{ item.image }}" alt="{{ item.name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
+                            <div>
+                                <h3 style="margin: 0 0 0.5rem 0;">{{ item.name }}</h3>
+                                <p style="margin: 0; color: #666;">Size: {{ item.size }}</p>
+                                <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <form action="{{ url_for('update_cart', index=loop.index0) }}" method="POST" style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="10" style="width: 60px; padding: 0.2rem; text-align: center; border-radius: 5px; border: 1px solid #ccc;">
+                                        <button type="submit" style="background: var(--primary-color); color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">Update</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="margin: 0 0 0.5rem 0; font-weight: bold; font-size: 1.1rem;">₹{{ item.price * item.quantity }}</p>
+                            <form action="{{ url_for('remove_from_cart', index=loop.index0) }}" method="POST" style="margin: 0;">
+                                <button type="submit" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 0.9rem; text-decoration: underline;">Remove</button>
+                            </form>
                         </div>
                     </div>
-                    <div style="text-align: right;">
-                        <p style="margin: 0 0 0.5rem 0; font-weight: bold; font-size: 1.1rem;">₹{{ item.price * item.quantity }}</p>
-                        <form action="{{ url_for('remove_from_cart', index=loop.index0) }}" method="POST" style="margin: 0;">
-                            <button type="submit" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 0.9rem; text-decoration: underline;">Remove</button>
-                        </form>
-                    </div>
-                </div>
             {% endfor %}
             
             <div style="text-align: right; margin-top: 2rem;">

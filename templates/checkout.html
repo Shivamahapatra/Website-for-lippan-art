@@ -94,7 +94,7 @@ document.getElementById('pay-btn').onclick = async function(e) {
                 const verifyData = await verifyRes.json();
                 
                 if (verifyData.success) {
-                    window.location.href = '/track?tracking_id=' + verifyData.tracking_id;
+                    window.location.href = '/thank_you?tracking_id=' + verifyData.tracking_id;
                 } else {
                     alert("Payment verification failed: " + verifyData.error);
                     btn.disabled = false;

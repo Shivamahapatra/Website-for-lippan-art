@@ -3,7 +3,7 @@ import os
 import base64
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from models import db, Product, Review, Commission, Order, OrderItem, ContactMessage
-from notifications import send_ready_email, send_ready_sms
+from notifications import send_ready_email, send_ready_sms, send_receipt_email
 import razorpay
 import uuid
 from werkzeug.exceptions import HTTPException
@@ -148,6 +148,10 @@ def cart():
 def add_to_cart():
     product_id = request.form.get('product_id')
     size = request.form.get('size')
+    try:
+        quantity = int(request.form.get('quantity', 1))
+    except ValueError:
+        quantity = 1
     
     product = Product.query.get_or_404(product_id)
     cart_items = session.get('cart', [])
@@ -156,7 +160,7 @@ def add_to_cart():
     found = False
     for item in cart_items:
         if str(item['product_id']) == str(product_id) and item['size'] == size:
-            item['quantity'] += 1
+            item['quantity'] += quantity
             found = True
             break
             
@@ -175,12 +179,26 @@ def add_to_cart():
             'name': product.name,
             'size': size,
             'price': product.price,
-            'quantity': 1,
+            'quantity': quantity,
             'image': img
         })
         
     session['cart'] = cart_items
     flash(f'{product.name} added to your cart!', 'success')
+    return redirect(url_for('cart'))
+
+@app.route('/cart/update/<int:index>', methods=['POST'])
+def update_cart(index):
+    cart_items = session.get('cart', [])
+    if 0 <= index < len(cart_items):
+        try:
+            new_qty = int(request.form.get('quantity', 1))
+            if new_qty > 0:
+                cart_items[index]['quantity'] = new_qty
+                session['cart'] = cart_items
+                flash('Cart updated.', 'success')
+        except ValueError:
+            pass
     return redirect(url_for('cart'))
 
 @app.route('/cart/remove/<int:index>', methods=['POST'])
@@ -276,10 +294,22 @@ def verify_payment():
         
     db.session.commit()
     
+    # Send email receipt
+    customer_email = data.get('email')
+    customer_name = data.get('customer_name')
+    if customer_email:
+        # Pass a copy of cart items to avoid issues if we clear it right after
+        send_receipt_email(customer_email, customer_name, tracking_id, list(cart_items), total)
+        
     # Clear the cart after successful order
     session.pop('cart', None)
     
     return jsonify({'success': True, 'tracking_id': tracking_id})
+
+@app.route('/thank_you', methods=['GET'])
+def thank_you():
+    tracking_id = request.args.get('tracking_id')
+    return render_template('thank_you.html', tracking_id=tracking_id)
 
 @app.route('/track', methods=['GET'])
 def track_order():
