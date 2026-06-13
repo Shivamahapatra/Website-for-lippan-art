@@ -33,9 +33,9 @@ export function ProductGrid({ products }: { products: Product[] }) {
             key={product.id}
             variants={{
               hidden: { opacity: 0, y: 50, scale: 0.95 },
-              show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 20 } },
+              show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
             }}
-            whileHover={{ y: -10, transition: { type: "spring", stiffness: 300 } }}
+            whileHover={{ y: -10, transition: { type: "spring" as const, stiffness: 300 } }}
             className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-foreground/5 shadow-sm hover:shadow-xl transition-shadow bg-white dark:bg-zinc-900"
           >
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
