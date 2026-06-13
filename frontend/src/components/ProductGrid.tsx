@@ -54,11 +54,6 @@ export function ProductGrid({ products }: { products: Product[] }) {
                   alt={product.name}
                   className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                 />
-                {!product.in_stock && (
-                  <div className="absolute top-4 right-4 bg-red-500/90 text-white px-3 py-1 text-xs font-bold rounded-full backdrop-blur-sm">
-                    Sold Out
-                  </div>
-                )}
               </div>
               
               <div className="p-6 flex flex-col flex-1">
@@ -77,10 +72,9 @@ export function ProductGrid({ products }: { products: Product[] }) {
 
                 <button 
                   onClick={() => addItem(product)}
-                  disabled={!product.in_stock}
-                  className="w-full py-3 px-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-accent transition-colors flex items-center justify-center gap-2"
                 >
-                  {product.in_stock ? "Add to Cart" : "Out of Stock"}
+                  Add to Cart
                 </button>
               </div>
             </motion.div>
