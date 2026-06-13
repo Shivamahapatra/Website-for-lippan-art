@@ -1,9 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { ShoppingBag, X, Minus, Plus, Trash2 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export function CartDrawer() {
   const { items, isOpen, toggleCart, updateQuantity, removeItem } = useCartStore();
@@ -116,9 +117,9 @@ export function CartDrawer() {
                   <span>Subtotal</span>
                   <span>₹{total}</span>
                 </div>
-                <button className="w-full py-4 bg-primary text-primary-foreground rounded-full font-bold text-lg hover:bg-accent transition-colors shadow-lg shadow-primary/20">
+                <Link href="/checkout" onClick={toggleCart} className="w-full py-4 bg-primary text-primary-foreground rounded-full font-bold text-lg hover:bg-accent transition-colors shadow-lg shadow-primary/20 flex justify-center items-center">
                   Proceed to Checkout
-                </button>
+                </Link>
               </div>
             )}
           </motion.div>
