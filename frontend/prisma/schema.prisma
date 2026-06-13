@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id           Int         @id @default(autoincrement())
+  name         String
+  description  String
+  price        Float
+  sizes        String
+  image_paths  String
+  image_base64 String?
+  reviews      Review[]
+  order_items  OrderItem[]
+
+  @@map("product")
+}
+
+model Review {
+  id            Int      @id @default(autoincrement())
+  product_id    Int
+  reviewer_name String
+  rating        Int
+  text          String
+  created_at    DateTime @default(now())
+  product       Product  @relation(fields: [product_id], references: [id])
+
+  @@map("review")
+}
+
+model Commission {
+  id                     Int      @id @default(autoincrement())
+  customer_name          String
+  email                  String
+  details                String
+  size_requested         String?
+  reference_image_base64 String?
+  status                 String   @default("New")
+  created_at             DateTime @default(now())
+
+  @@map("commission")
+}
+
+model ContactMessage {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  message    String
+  created_at DateTime @default(now())
+
+  @@map("contact_message")
+}
+
+model Order {
+  id                  Int         @id @default(autoincrement())
+  customer_name       String
+  email               String
+  phone_number        String
+  total_amount        Float
+  status              String      @default("Order Received")
+  tracking_id         String      @unique
+  razorpay_order_id   String?
+  razorpay_payment_id String?
+  razorpay_signature  String?
+  payment_status      String      @default("Pending")
+  created_at          DateTime    @default(now())
+  items               OrderItem[]
+
+  @@map("order")
+}
+
+model OrderItem {
+  id         Int     @id @default(autoincrement())
+  order_id   Int
+  product_id Int
+  size       String
+  quantity   Int
+  price      Float
+  order      Order   @relation(fields: [order_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
+
+  @@map("order_item")
+}
