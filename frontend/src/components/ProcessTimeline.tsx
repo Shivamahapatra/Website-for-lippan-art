@@ -16,12 +16,12 @@ export function ProcessTimeline() {
           </p>
           <div className="grid grid-cols-2 gap-4">
             <img
-              src="https://images.unsplash.com/photo-1618220179428-22790b46a0eb?q=80&w=800&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1610992015762-b94f6fdf7c25?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
               alt="Mixing clay"
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
             <img
-              src="https://images.unsplash.com/photo-1590273089301-447b85cf94da?q=80&w=800&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1578301978018-3005759f48f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
               alt="Preparing base"
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
@@ -40,7 +40,7 @@ export function ProcessTimeline() {
           </p>
           <div className="grid grid-cols-1 gap-4">
             <img
-              src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1200&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1605470258169-d4c3abce26bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
               alt="Mud relief work"
               className="rounded-lg object-cover h-40 md:h-64 lg:h-80 w-full shadow-md"
             />
@@ -59,12 +59,12 @@ export function ProcessTimeline() {
           </p>
           <div className="grid grid-cols-2 gap-4">
             <img
-              src="https://images.unsplash.com/photo-1601662528567-526cd06f6582?q=80&w=800&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1615800098779-1be32e60cca3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
               alt="Setting mirrors"
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
             <img
-              src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=800&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
               alt="Mirror details"
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
@@ -83,7 +83,7 @@ export function ProcessTimeline() {
           </p>
           <div className="grid grid-cols-1 gap-4">
             <img
-              src="https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?q=80&w=1200&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
               alt="Final painted piece"
               className="rounded-lg object-cover h-40 md:h-64 lg:h-80 w-full shadow-md"
             />
