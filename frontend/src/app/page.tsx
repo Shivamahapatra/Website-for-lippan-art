@@ -1,3 +1,4 @@
+import { ToonhubHero } from "@/components/ToonhubHero";
 import { Hero } from "@/components/Hero";
 import { ProductNotchViewer } from "@/components/ProductNotchViewer";
 import { CommissionForm } from "@/components/CommissionForm";
@@ -12,8 +13,10 @@ export default async function Home() {
   });
 
   return (
-    <main className="flex min-h-screen flex-col px-4 md:px-8">
-      <Hero />
+    <main className="flex min-h-screen flex-col">
+      <ToonhubHero />
+      <div className="px-4 md:px-8">
+        <Hero />
       
       <AboutArtist />
       
