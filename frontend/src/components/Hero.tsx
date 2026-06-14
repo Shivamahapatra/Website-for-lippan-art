@@ -10,7 +10,7 @@ const artisans = [
     id: 1,
     name: "Rasmita Mahapatra",
     designation: "Master Artisan & Founder",
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&q=80",
+    image: "/rasmita.jpg",
   }
 ];
 
