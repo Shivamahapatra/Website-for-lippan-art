@@ -14,7 +14,6 @@ const artisans = [
   }
 ];
 
-import { FollowerPointerCard } from "@/components/ui/following-pointer";
 
 export function Hero() {
   const FADE_DOWN_ANIMATION_VARIANTS: Variants = {
@@ -30,44 +29,40 @@ export function Hero() {
         <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent/20 rounded-full blur-[120px] opacity-50" />
       </div>
 
-      <FollowerPointerCard 
-        className="z-10 flex flex-col items-center text-center px-4 mt-12 w-full max-w-5xl"
-        title={<span className="font-bold">✨ Genuine Lippan Art</span>}
-      >
-        <motion.div
-          initial="hidden"
-          animate="show"
-          viewport={{ once: true }}
-          variants={{
-            hidden: {},
-            show: {
-              transition: {
-                staggerChildren: 0.15,
-              },
+      <motion.div
+        initial="hidden"
+        animate="show"
+        viewport={{ once: true }}
+        variants={{
+          hidden: {},
+          show: {
+            transition: {
+              staggerChildren: 0.15,
             },
-          }}
-          className="flex flex-col items-center text-center w-full"
+          },
+        }}
+        className="z-10 flex flex-col items-center text-center px-4 mt-12 w-full max-w-5xl"
+      >
+        <motion.div variants={FADE_DOWN_ANIMATION_VARIANTS} className="inline-block mb-4 px-4 py-1.5 rounded-full border border-primary/20 bg-card/50 backdrop-blur-md">
+          <p className="text-sm font-medium text-primary tracking-wide uppercase">Handcrafted Elegance</p>
+        </motion.div>
+        
+        <motion.h1
+          variants={FADE_DOWN_ANIMATION_VARIANTS}
+          className="text-5xl md:text-7xl font-bold tracking-tight text-foreground max-w-4xl"
         >
-          <motion.div variants={FADE_DOWN_ANIMATION_VARIANTS} className="inline-block mb-4 px-4 py-1.5 rounded-full border border-primary/20 bg-card/50 backdrop-blur-md">
-            <p className="text-sm font-medium text-primary tracking-wide uppercase">Handcrafted Elegance</p>
-          </motion.div>
-          
-          <motion.h1
-            variants={FADE_DOWN_ANIMATION_VARIANTS}
-            className="text-5xl md:text-7xl font-bold tracking-tight text-foreground max-w-4xl"
-          >
-            Exquisite Lippan Art for <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground to-foreground/50">
-              Modern Spaces
-            </span>
-          </motion.h1>
+          Exquisite Lippan Art for <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground to-foreground/50">
+            Modern Spaces
+          </span>
+        </motion.h1>
 
-          <motion.p
-            variants={FADE_DOWN_ANIMATION_VARIANTS}
-            className="mt-6 text-lg md:text-xl text-foreground/70 max-w-2xl leading-relaxed"
-          >
-            Discover authentic, handcrafted mud and mirror work that perfectly balances deep tradition with minimalist elegance.
-          </motion.p>
+        <motion.p
+          variants={FADE_DOWN_ANIMATION_VARIANTS}
+          className="mt-6 text-lg md:text-xl text-foreground/70 max-w-2xl leading-relaxed"
+        >
+          Discover authentic, handcrafted mud and mirror work that perfectly balances deep tradition with minimalist elegance.
+        </motion.p>
 
         <motion.div variants={FADE_DOWN_ANIMATION_VARIANTS} className="mt-10 flex gap-4">
           <motion.button
@@ -104,8 +99,7 @@ export function Hero() {
             <AnimatedTooltip items={artisans} />
           </div>
         </motion.div>
-        </motion.div>
-      </FollowerPointerCard>
+      </motion.div>
     </div>
   );
 }
