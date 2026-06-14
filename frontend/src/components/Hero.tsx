@@ -14,6 +14,8 @@ const artisans = [
   }
 ];
 
+import { FollowerPointerCard } from "@/components/ui/following-pointer";
+
 export function Hero() {
   const FADE_DOWN_ANIMATION_VARIANTS: Variants = {
     hidden: { opacity: 0, y: -10, filter: "blur(10px)" },
@@ -46,15 +48,17 @@ export function Hero() {
           <p className="text-sm font-medium text-primary tracking-wide uppercase">Handcrafted Elegance</p>
         </motion.div>
         
-        <motion.h1
-          variants={FADE_DOWN_ANIMATION_VARIANTS}
-          className="text-5xl md:text-7xl font-bold tracking-tight text-foreground max-w-4xl"
-        >
-          Exquisite Lippan Art for <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground to-foreground/50">
-            Modern Spaces
-          </span>
-        </motion.h1>
+        <FollowerPointerCard title={<span className="font-bold">✨ Genuine Lippan Art</span>}>
+          <motion.h1
+            variants={FADE_DOWN_ANIMATION_VARIANTS}
+            className="text-5xl md:text-7xl font-bold tracking-tight text-foreground max-w-4xl"
+          >
+            Exquisite Lippan Art for <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground to-foreground/50">
+              Modern Spaces
+            </span>
+          </motion.h1>
+        </FollowerPointerCard>
 
         <motion.p
           variants={FADE_DOWN_ANIMATION_VARIANTS}
