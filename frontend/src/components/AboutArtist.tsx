@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export function AboutArtist() {
   return (
-    <section className="w-full py-24 bg-background border-y border-foreground/5 overflow-hidden">
+    <section id="about-artist" className="w-full py-24 bg-background border-y border-foreground/5 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
           {/* Image */}

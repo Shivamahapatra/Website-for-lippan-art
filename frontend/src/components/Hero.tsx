@@ -91,7 +91,10 @@ export function Hero() {
         {/* Artisans Tooltip */}
         <motion.div variants={FADE_DOWN_ANIMATION_VARIANTS} className="mt-20 flex flex-col items-center gap-4">
           <p className="text-sm font-medium text-foreground/50 uppercase tracking-widest">Meet the Master Artisan</p>
-          <div className="flex flex-row items-center justify-center mb-10 w-full">
+          <div 
+            className="flex flex-row items-center justify-center mb-10 w-full cursor-pointer hover:scale-105 transition-transform"
+            onClick={() => document.getElementById('about-artist')?.scrollIntoView({ behavior: 'smooth' })}
+          >
             <AnimatedTooltip items={artisans} />
           </div>
         </motion.div>
