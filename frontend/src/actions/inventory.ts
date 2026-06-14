@@ -21,7 +21,7 @@ export async function addProduct(data: {
   description: string;
   price: number;
   sizes: string;
-  image_paths: string;
+  image_base64: string;
 }) {
   await verifyAdminServerAction();
   
@@ -31,7 +31,8 @@ export async function addProduct(data: {
       description: data.description,
       price: data.price,
       sizes: data.sizes,
-      image_paths: data.image_paths,
+      image_paths: "",
+      image_base64: data.image_base64,
     },
   });
   
@@ -40,12 +41,29 @@ export async function addProduct(data: {
   return { success: true };
 }
 
-export async function updateProductPrice(id: number, newPrice: number) {
+export async function updateProduct(id: number, data: {
+  name: string;
+  description: string;
+  price: number;
+  sizes: string;
+  image_base64?: string;
+}) {
   await verifyAdminServerAction();
+  
+  const updateData: any = {
+    name: data.name,
+    description: data.description,
+    price: data.price,
+    sizes: data.sizes,
+  };
+
+  if (data.image_base64) {
+    updateData.image_base64 = data.image_base64;
+  }
   
   await prisma.product.update({
     where: { id },
-    data: { price: newPrice },
+    data: updateData,
   });
   
   revalidatePath("/admin/inventory");
@@ -54,13 +72,27 @@ export async function updateProductPrice(id: number, newPrice: number) {
 }
 
 export async function deleteProduct(id: number) {
-  await verifyAdminServerAction();
-  
-  await prisma.product.delete({
-    where: { id },
-  });
-  
-  revalidatePath("/admin/inventory");
-  revalidatePath("/");
-  return { success: true };
+  try {
+    await verifyAdminServerAction();
+    
+    // First delete related foreign key records to prevent constraint errors
+    await prisma.orderItem.deleteMany({
+      where: { product_id: id }
+    });
+    
+    await prisma.review.deleteMany({
+      where: { product_id: id }
+    });
+
+    await prisma.product.delete({
+      where: { id },
+    });
+    
+    revalidatePath("/admin/inventory");
+    revalidatePath("/");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting product:", error);
+    return { success: false, error: error.message || "Failed to delete product" };
+  }
 }
