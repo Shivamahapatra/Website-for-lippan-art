@@ -17,17 +17,13 @@ export default async function Home() {
       <ToonhubHero />
       <div className="px-4 md:px-8">
         <Hero />
-      
-      <AboutArtist />
-      
-      <ProductNotchViewer products={products} />
-      
-      <ReviewsSection />
-      
-      <ProcessTimeline />
-      
-      <div id="commission" className="max-w-7xl mx-auto w-full px-6 py-24">
-        <CommissionForm />
+        <AboutArtist />
+        <ProductNotchViewer products={products} />
+        <ReviewsSection />
+        <ProcessTimeline />
+        <div id="commission" className="max-w-7xl mx-auto w-full px-6 py-24">
+          <CommissionForm />
+        </div>
       </div>
     </main>
   );
