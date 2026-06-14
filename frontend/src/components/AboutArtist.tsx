@@ -17,7 +17,7 @@ export function AboutArtist() {
           >
             <div className="relative aspect-square max-w-sm mx-auto rounded-[3rem] overflow-hidden border-[12px] border-primary/5 shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
               <img 
-                src="/rasmita.jpg" 
+                src="/rasmita.jpeg" 
                 alt="Rasmita Mahapatra" 
                 className="w-full h-full object-cover saturate-[0.8] hover:saturate-100 transition-all duration-500"
               />

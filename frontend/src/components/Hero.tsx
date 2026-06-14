@@ -10,7 +10,7 @@ const artisans = [
     id: 1,
     name: "Rasmita Mahapatra",
     designation: "Master Artisan & Founder",
-    image: "/rasmita.jpg",
+    image: "/rasmita.jpeg",
   }
 ];
 
