@@ -4,12 +4,15 @@ import { prisma } from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
+import { sendReceiptEmail, sendReviewEmail } from "@/lib/email";
+
 const STAGES = [
   "Order Received",
   "Prepping Board",
   "Clay & Mirror Work",
   "Drying",
   "Ready for Pickup",
+  "Completed & Picked Up",
 ];
 
 async function verifyAdminServerAction() {
@@ -44,7 +47,9 @@ export async function advanceOrderStatus(orderId: number) {
       data: { status: nextStatus },
     });
 
-    // TODO: Trigger Ready for Pickup Email/SMS if nextStatus === "Ready for Pickup"
+    if (nextStatus === "Completed & Picked Up") {
+      await sendReviewEmail(order.email, order.customer_name, order.tracking_id);
+    }
 
     revalidatePath("/admin/orders");
     return { success: true, newStatus: nextStatus };
