@@ -1,5 +1,5 @@
 import { Hero } from "@/components/Hero";
-import { ProductGrid } from "@/components/ProductGrid";
+import { ProductNotchViewer } from "@/components/ProductNotchViewer";
 import { CommissionForm } from "@/components/CommissionForm";
 import { prisma } from "@/lib/db";
 
@@ -9,11 +9,9 @@ export default async function Home() {
   });
 
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="flex min-h-screen flex-col px-4 md:px-8">
       <Hero />
-      <div id="shop">
-        <ProductGrid products={products} />
-      </div>
+      <ProductNotchViewer products={products} />
       
       <div id="commission" className="max-w-7xl mx-auto w-full px-6 py-24">
         <CommissionForm />
