@@ -2,7 +2,7 @@ import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Package, ShoppingCart } from "lucide-react";
+import { Package, ShoppingCart, Image as ImageIcon } from "lucide-react";
 
 export default async function AdminDashboardLayout({
   children,
@@ -27,13 +27,17 @@ export default async function AdminDashboardLayout({
         </div>
         
         <nav className="flex flex-col gap-2 flex-1">
-          <Link href="/admin/inventory" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted font-medium transition-colors">
+          <Link href="/admin/inventory" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-foreground font-medium transition-colors">
             <Package className="w-5 h-5" />
             Inventory
           </Link>
-          <Link href="/admin/orders" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted font-medium transition-colors">
+          <Link href="/admin/orders" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-foreground font-medium transition-colors">
             <ShoppingCart className="w-5 h-5" />
             Orders
+          </Link>
+          <Link href="/admin/commissions" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-foreground font-medium transition-colors">
+            <ImageIcon className="w-5 h-5" />
+            Commissions
           </Link>
         </nav>
 
