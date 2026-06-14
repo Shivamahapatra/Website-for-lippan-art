@@ -67,7 +67,7 @@ export default async function CustomerAccountPage() {
                 <div className="w-full bg-muted rounded-full h-4 overflow-hidden">
                   <div 
                     className="bg-primary h-full rounded-full transition-all duration-1000 ease-out"
-                    style={{ width: \`\${(completedOrdersCount / 5) * 100}%\` }}
+                    style={{ width: `${(completedOrdersCount / 5) * 100}%` }}
                   />
                 </div>
               </div>
@@ -117,7 +117,7 @@ export default async function CustomerAccountPage() {
 
             {orders.length === 0 && (
               <div className="text-center p-12 text-foreground/50 bg-card rounded-2xl border border-foreground/5">
-                You haven't made any purchases yet. Let's find you some beautiful art!
+                You haven&apos;t made any purchases yet. Let&apos;s find you some beautiful art!
               </div>
             )}
           </div>
