@@ -1,12 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Product } from "@prisma/client";
 import { useCartStore } from "@/store/useCartStore";
+import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
 
 export function ProductGrid({ products }: { products: Product[] }) {
-  const { addItem } = useCartStore();
+  const { addItem, toggleCart } = useCartStore();
 
   return (
     <section id="shop" className="w-full py-24 px-6 relative z-10 bg-background/50">
@@ -39,45 +41,43 @@ export function ProductGrid({ products }: { products: Product[] }) {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {products.map((product) => (
-            <motion.div
-              key={product.id}
-              variants={{
-                hidden: { opacity: 0, y: 50, scale: 0.95 },
-                show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
-              }}
-              whileHover={{ y: -10, transition: { type: "spring" as const, stiffness: 300 } }}
-              className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-foreground/5 shadow-sm hover:shadow-xl transition-shadow bg-white dark:bg-zinc-900"
-            >
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img
-                  src={product.image_base64 || (product.image_paths?.startsWith('http') ? product.image_paths.split(',')[0] : '/placeholder.jpg')}
-                  alt={product.name}
-                  className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
-              
-              <div className="p-6 flex flex-col flex-1">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold line-clamp-1 group-hover:text-primary transition-colors">
-                    {product.name}
-                  </h3>
-                  <span className="font-bold text-lg text-primary">
-                    ₹{product.price.toString()}
-                  </span>
-                </div>
+            <CardContainer key={product.id} className="inter-var w-full">
+              <CardBody className="bg-card group/card w-full border border-foreground/5 rounded-3xl p-4 sm:p-6 shadow-sm hover:shadow-xl transition-all h-full flex flex-col">
+                <CardItem translateZ="50" className="w-full relative aspect-square rounded-2xl overflow-hidden mb-6 bg-muted">
+                  <img
+                    src={product.image_base64 || (product.image_paths?.startsWith('http') ? product.image_paths.split(',')[0] : '/placeholder.jpg')}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105"
+                  />
+                  <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-foreground/10 text-xs font-bold shadow-sm">
+                    In Stock
+                  </div>
+                </CardItem>
                 
-                <p className="text-sm text-foreground/60 line-clamp-2 mb-6 flex-1">
-                  {product.description}
-                </p>
-
-                <button 
-                  onClick={() => addItem(product)}
-                  className="w-full py-3 px-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-accent transition-colors flex items-center justify-center gap-2"
-                >
-                  Add to Cart
-                </button>
-              </div>
-            </motion.div>
+                <CardItem translateZ="30" className="flex-1">
+                  <div className="flex justify-between items-start gap-4 mb-2">
+                    <h3 className="text-xl font-bold leading-tight">{product.name}</h3>
+                    <span className="text-lg font-bold text-primary shrink-0">₹{product.price.toString()}</span>
+                  </div>
+                  <p className="text-foreground/60 text-sm mb-6 line-clamp-2">
+                    {product.description}
+                  </p>
+                </CardItem>
+                
+                <CardItem translateZ="40" className="w-full">
+                  <button 
+                    onClick={() => {
+                      addItem(product);
+                      toggleCart();
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-muted hover:bg-primary hover:text-primary-foreground text-foreground font-semibold py-3.5 px-4 rounded-xl transition-colors group/btn"
+                  >
+                    <ShoppingCart className="w-4 h-4 transition-transform group-hover/btn:scale-110" />
+                    Add to Cart
+                  </button>
+                </CardItem>
+              </CardBody>
+            </CardContainer>
           ))}
         </motion.div>
       </div>

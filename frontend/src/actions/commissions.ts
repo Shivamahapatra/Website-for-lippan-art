@@ -85,3 +85,14 @@ export async function submitCommission(formData: FormData) {
   revalidatePath("/admin/commissions");
   return { success: true };
 }
+
+export async function deleteCommission(commissionId: number) {
+  await verifyAdminServerAction();
+
+  await prisma.commission.delete({
+    where: { id: commissionId },
+  });
+
+  revalidatePath("/admin/commissions");
+  return { success: true };
+}
