@@ -95,7 +95,11 @@ export function ProcessTimeline() {
 
   return (
     <div id="process" className="w-full bg-background font-sans border-y border-foreground/5 py-12">
-      <Timeline data={data} />
+      <Timeline 
+        data={data} 
+        title="The Artistic Process"
+        description="A step-by-step look at how each authentic Lippan masterpiece is crafted from raw mud to a mirrored vision."
+      />
     </div>
   );
 }
