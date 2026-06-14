@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 const STAGES = [
@@ -13,11 +13,8 @@ const STAGES = [
 ];
 
 async function verifyAdminServerAction() {
-  const authObj = await auth();
-  if (!authObj.userId) throw new Error("Unauthorized");
-  
-  const sessionClaims = authObj.sessionClaims as { email?: string } | null;
-  const userEmail = sessionClaims?.email;
+  const user = await currentUser();
+  const userEmail = user?.emailAddresses[0]?.emailAddress;
   
   const adminEmailsRaw = process.env.ADMIN_EMAILS || "";
   const adminEmails = adminEmailsRaw.split(',').map(e => e.trim().toLowerCase());

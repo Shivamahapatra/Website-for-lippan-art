@@ -1,12 +1,23 @@
 import { UserButton } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Package, ShoppingCart } from "lucide-react";
 
-export default function AdminDashboardLayout({
+export default async function AdminDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await currentUser();
+  const userEmail = user?.emailAddresses[0]?.emailAddress;
+  
+  const adminEmailsRaw = process.env.ADMIN_EMAILS || "";
+  const adminEmails = adminEmailsRaw.split(',').map(e => e.trim().toLowerCase());
+
+  if (!userEmail || !adminEmails.includes(userEmail.toLowerCase())) {
+    redirect("/");
+  }
   return (
     <div className="min-h-screen bg-muted/30 flex">
       {/* Sidebar */}
