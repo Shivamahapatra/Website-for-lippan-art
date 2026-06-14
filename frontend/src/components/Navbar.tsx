@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
+import { ThemeToggle } from "@/components/ThemeToggle";
+
 export function Navbar() {
   const { items, toggleCart } = useCartStore();
   const [mounted, setMounted] = useState(false);
@@ -47,6 +49,8 @@ export function Navbar() {
           </SignedIn>
 
           <div className="w-px h-6 bg-foreground/10 mx-1"></div>
+
+          <ThemeToggle />
 
           <button
             onClick={toggleCart}

@@ -40,7 +40,7 @@ export function Hero() {
           className="text-5xl md:text-7xl font-bold tracking-tight text-foreground max-w-4xl"
         >
           Exquisite Lippan Art for <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground to-foreground/50">
             Modern Spaces
           </span>
         </motion.h1>
