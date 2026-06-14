@@ -3,6 +3,7 @@ import { ProductNotchViewer } from "@/components/ProductNotchViewer";
 import { CommissionForm } from "@/components/CommissionForm";
 import { ReviewsSection } from "@/components/ReviewsSection";
 import { ProcessTimeline } from "@/components/ProcessTimeline";
+import { AboutArtist } from "@/components/AboutArtist";
 import { prisma } from "@/lib/db";
 
 export default async function Home() {
@@ -13,6 +14,9 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col px-4 md:px-8">
       <Hero />
+      
+      <AboutArtist />
+      
       <ProductNotchViewer products={products} />
       
       <ReviewsSection />

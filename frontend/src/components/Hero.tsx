@@ -8,28 +8,10 @@ import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
 const artisans = [
   {
     id: 1,
-    name: "Aarav Sharma",
-    designation: "Master Sculptor",
-    image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    id: 2,
-    name: "Diya Patel",
-    designation: "Mirror Art Specialist",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    id: 3,
-    name: "Vikram Singh",
-    designation: "Mud Artisan",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    id: 4,
-    name: "Meera Reddy",
-    designation: "Lead Designer",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&q=80",
-  },
+    name: "Rasmita Mahapatra",
+    designation: "Master Artisan & Founder",
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&q=80",
+  }
 ];
 
 export function Hero() {
@@ -108,7 +90,7 @@ export function Hero() {
 
         {/* Artisans Tooltip */}
         <motion.div variants={FADE_DOWN_ANIMATION_VARIANTS} className="mt-20 flex flex-col items-center gap-4">
-          <p className="text-sm font-medium text-foreground/50 uppercase tracking-widest">Meet Our Master Artisans</p>
+          <p className="text-sm font-medium text-foreground/50 uppercase tracking-widest">Meet the Master Artisan</p>
           <div className="flex flex-row items-center justify-center mb-10 w-full">
             <AnimatedTooltip items={artisans} />
           </div>
