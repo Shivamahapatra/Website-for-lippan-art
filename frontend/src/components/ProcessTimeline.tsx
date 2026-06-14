@@ -11,8 +11,9 @@ export function ProcessTimeline() {
         <div>
           <p className="text-foreground/80 text-sm md:text-base font-normal mb-8">
             The foundation of every authentic Lippan masterpiece begins with a sturdy canvas. Traditionally, artisans used 
-            local Kutch clay mixed with camel dung to create an insect-repellent base. Today, we utilize modern, durable 
-            equivalents that honor the traditional texture while ensuring your artwork lasts a lifetime without crumbling.
+            local Kutch clay mixed with camel dung to create an insect-repellent base. Today, we sustainably upcycle literal 
+            brown corrugated cardboard from shipping boxes. This makes the base incredibly lightweight, eco-friendly, and 
+            easy to hang, while still honoring the traditional raw texture of the mud work.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <img
@@ -21,8 +22,8 @@ export function ProcessTimeline() {
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
             <img
-              src="/timeline/base_prep_1781455392205.png"
-              alt="Preparing base"
+              src="/timeline/literal_cardboard_1781456119820.png"
+              alt="Preparing literal cardboard base"
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
           </div>
