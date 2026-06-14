@@ -5,6 +5,9 @@ import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useEffect, useState } from "react";
 
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import Link from "next/link";
+
 export function Navbar() {
   const { items, toggleCart } = useCartStore();
   const [mounted, setMounted] = useState(false);
@@ -19,17 +22,32 @@ export function Navbar() {
     <header className="sticky top-0 z-30 w-full border-b border-foreground/5 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tighter text-primary">Lippan Art</span>
+          <Link href="/" className="text-xl font-bold tracking-tighter text-primary">Lippan Art</Link>
         </div>
 
         <nav className="hidden md:flex gap-6 text-sm font-medium text-foreground/80">
-          <a href="#" className="hover:text-primary transition-colors">Home</a>
-          <a href="#shop" className="hover:text-primary transition-colors">Shop</a>
-          <a href="#" className="hover:text-primary transition-colors">About Us</a>
-          <a href="#" className="hover:text-primary transition-colors">Contact</a>
+          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+          <a href="/#shop" className="hover:text-primary transition-colors">Shop</a>
         </nav>
 
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="text-sm font-bold text-foreground/80 hover:text-primary transition-colors">
+                Log In
+              </button>
+            </SignInButton>
+          </SignedOut>
+
+          <SignedIn>
+            <Link href="/account" className="text-sm font-bold text-foreground/80 hover:text-primary transition-colors hidden md:block">
+              My Account
+            </Link>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+
+          <div className="w-px h-6 bg-foreground/10 mx-1"></div>
+
           <button
             onClick={toggleCart}
             className="relative p-2 text-foreground/80 hover:text-primary transition-colors rounded-full hover:bg-foreground/5"
