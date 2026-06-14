@@ -1,8 +1,23 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { checkAdmin } from "./admin";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+
+async function verifyAdminServerAction() {
+  const authObj = await auth();
+  if (!authObj.userId) throw new Error("Unauthorized");
+  
+  const sessionClaims = authObj.sessionClaims as { email?: string } | null;
+  const userEmail = sessionClaims?.email;
+  
+  const adminEmailsRaw = process.env.ADMIN_EMAILS || "";
+  const adminEmails = adminEmailsRaw.split(',').map(e => e.trim().toLowerCase());
+  
+  if (!userEmail || !adminEmails.includes(userEmail.toLowerCase())) {
+    throw new Error("Unauthorized Admin");
+  }
+}
 
 export async function addProduct(data: {
   name: string;
@@ -11,7 +26,7 @@ export async function addProduct(data: {
   sizes: string;
   image_paths: string;
 }) {
-  if (!(await checkAdmin())) throw new Error("Unauthorized");
+  await verifyAdminServerAction();
   
   await prisma.product.create({
     data: {
@@ -29,7 +44,7 @@ export async function addProduct(data: {
 }
 
 export async function updateProductPrice(id: number, newPrice: number) {
-  if (!(await checkAdmin())) throw new Error("Unauthorized");
+  await verifyAdminServerAction();
   
   await prisma.product.update({
     where: { id },
@@ -42,7 +57,7 @@ export async function updateProductPrice(id: number, newPrice: number) {
 }
 
 export async function deleteProduct(id: number) {
-  if (!(await checkAdmin())) throw new Error("Unauthorized");
+  await verifyAdminServerAction();
   
   await prisma.product.delete({
     where: { id },

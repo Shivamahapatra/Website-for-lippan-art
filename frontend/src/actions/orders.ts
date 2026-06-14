@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { checkAdmin } from "./admin";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 const STAGES = [
@@ -12,8 +12,23 @@ const STAGES = [
   "Ready for Pickup",
 ];
 
+async function verifyAdminServerAction() {
+  const authObj = await auth();
+  if (!authObj.userId) throw new Error("Unauthorized");
+  
+  const sessionClaims = authObj.sessionClaims as { email?: string } | null;
+  const userEmail = sessionClaims?.email;
+  
+  const adminEmailsRaw = process.env.ADMIN_EMAILS || "";
+  const adminEmails = adminEmailsRaw.split(',').map(e => e.trim().toLowerCase());
+  
+  if (!userEmail || !adminEmails.includes(userEmail.toLowerCase())) {
+    throw new Error("Unauthorized Admin");
+  }
+}
+
 export async function advanceOrderStatus(orderId: number) {
-  if (!(await checkAdmin())) throw new Error("Unauthorized");
+  await verifyAdminServerAction();
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },

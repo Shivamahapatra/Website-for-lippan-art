@@ -4,6 +4,7 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { sendReceiptEmail } from "@/lib/email";
+import { auth } from "@clerk/nextjs/server";
 
 // Initialize Razorpay SDK
 const razorpay = new Razorpay({
@@ -11,8 +12,25 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET || "test_key_secret",
 });
 
-export async function createRazorpayOrder(totalAmount: number) {
-  const amountInPaise = Math.round(totalAmount * 100);
+async function getLoyaltyDiscount() {
+  const authObj = await auth();
+  if (!authObj.userId) return 0; // 0% discount if not logged in
+
+  const pastOrders = await prisma.order.count({
+    where: { 
+      clerk_user_id: authObj.userId,
+      payment_status: "Paid"
+    }
+  });
+
+  return pastOrders >= 5 ? 0.20 : 0; // 20% discount if 5+ orders
+}
+
+export async function createRazorpayOrder(baseTotalAmount: number) {
+  const discountRate = await getLoyaltyDiscount();
+  const finalAmount = baseTotalAmount * (1 - discountRate);
+  
+  const amountInPaise = Math.round(finalAmount * 100);
 
   if (amountInPaise < 100) {
     throw new Error("Amount too small");
@@ -30,6 +48,7 @@ export async function createRazorpayOrder(totalAmount: number) {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
+      discountApplied: discountRate > 0,
     };
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
@@ -63,19 +82,25 @@ export async function verifyAndSaveOrder(
     throw new Error("Invalid payment signature");
   }
 
-  // 2. Save Order to Database via Prisma
-  const total = cartItems.reduce(
+  // 2. Calculate Final Total Securely
+  const authObj = await auth();
+  const discountRate = await getLoyaltyDiscount();
+  const baseTotal = cartItems.reduce(
     (acc, item) => acc + Number(item.product.price) * item.quantity,
     0
   );
+  const finalTotal = baseTotal * (1 - discountRate);
+
+  // 3. Save Order to Database via Prisma
   const trackingId = crypto.randomBytes(4).toString("hex").toUpperCase();
 
   const newOrder = await prisma.order.create({
     data: {
+      clerk_user_id: authObj.userId || null,
       customer_name: customerInfo.name,
       email: customerInfo.email,
       phone_number: customerInfo.phone,
-      total_amount: total,
+      total_amount: finalTotal,
       tracking_id: trackingId,
       razorpay_order_id,
       razorpay_payment_id,
@@ -85,7 +110,7 @@ export async function verifyAndSaveOrder(
       items: {
         create: cartItems.map((item) => ({
           product_id: item.product.id,
-          size: "Standard", // Simplification as requested
+          size: "Standard",
           quantity: item.quantity,
           price: Number(item.product.price),
         })),
@@ -93,13 +118,13 @@ export async function verifyAndSaveOrder(
     },
   });
 
-  // 3. Send Email Receipt
+  // 4. Send Email Receipt
   await sendReceiptEmail(
     customerInfo.email,
     customerInfo.name,
     trackingId,
     cartItems,
-    total
+    finalTotal
   );
 
   return { success: true, trackingId };
