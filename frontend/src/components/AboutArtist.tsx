@@ -1,6 +1,6 @@
 "use client";
 
-import { Instagram } from "lucide-react";
+import { IconBrandInstagram as Instagram } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 
 export function AboutArtist() {
