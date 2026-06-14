@@ -94,7 +94,7 @@ export function Hero() {
             Shop the Collection
           </motion.button>
           <motion.button
-            onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' })}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={cn(
