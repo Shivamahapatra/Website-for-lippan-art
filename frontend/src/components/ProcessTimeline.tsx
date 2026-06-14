@@ -16,12 +16,12 @@ export function ProcessTimeline() {
           </p>
           <div className="grid grid-cols-2 gap-4">
             <img
-              src="https://images.unsplash.com/photo-1610992015762-b94f6fdf7c25?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              src="/timeline/clay_mixing_1781455378254.png"
               alt="Mixing clay"
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
             <img
-              src="https://images.unsplash.com/photo-1578301978018-3005759f48f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              src="/timeline/base_prep_1781455392205.png"
               alt="Preparing base"
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
@@ -40,7 +40,7 @@ export function ProcessTimeline() {
           </p>
           <div className="grid grid-cols-1 gap-4">
             <img
-              src="https://images.unsplash.com/photo-1605470258169-d4c3abce26bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+              src="/timeline/mud_relief_1781455406400.png"
               alt="Mud relief work"
               className="rounded-lg object-cover h-40 md:h-64 lg:h-80 w-full shadow-md"
             />
@@ -59,12 +59,12 @@ export function ProcessTimeline() {
           </p>
           <div className="grid grid-cols-2 gap-4">
             <img
-              src="https://images.unsplash.com/photo-1615800098779-1be32e60cca3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              src="/timeline/mirror_setting_1781455419993.png"
               alt="Setting mirrors"
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
             <img
-              src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              src="/timeline/mirror_details_1781455432487.png"
               alt="Mirror details"
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
@@ -83,7 +83,7 @@ export function ProcessTimeline() {
           </p>
           <div className="grid grid-cols-1 gap-4">
             <img
-              src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+              src="/timeline/painting_art_1781455445949.png"
               alt="Final painted piece"
               className="rounded-lg object-cover h-40 md:h-64 lg:h-80 w-full shadow-md"
             />
