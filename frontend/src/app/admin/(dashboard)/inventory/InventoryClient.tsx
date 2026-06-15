@@ -78,16 +78,18 @@ export function InventoryClient({ initialProducts }: { initialProducts: Product[
         if (formData.image_base64 !== editingProduct.image_base64) {
           payload.image_base64 = formData.image_base64;
         }
-        await updateProduct(editingProduct.id, payload);
+        const res = await updateProduct(editingProduct.id, payload);
+        if (!res.success) throw new Error(res.error);
         alert("Product updated successfully!");
       } else {
-        await addProduct({
+        const res = await addProduct({
           name: formData.name,
           description: formData.description,
           price: parseFloat(formData.price),
           sizes: formData.sizes,
           image_base64: formData.image_base64,
         });
+        if (!res.success) throw new Error(res.error);
         alert("Product added successfully!");
       }
       closeModal();

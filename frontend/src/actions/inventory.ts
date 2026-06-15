@@ -23,22 +23,27 @@ export async function addProduct(data: {
   sizes: string;
   image_base64: string;
 }) {
-  await verifyAdminServerAction();
-  
-  await prisma.product.create({
-    data: {
-      name: data.name,
-      description: data.description,
-      price: data.price,
-      sizes: data.sizes,
-      image_paths: "",
-      image_base64: data.image_base64,
-    },
-  });
-  
-  revalidatePath("/admin/inventory");
-  revalidatePath("/");
-  return { success: true };
+  try {
+    await verifyAdminServerAction();
+    
+    await prisma.product.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        sizes: data.sizes,
+        image_paths: "",
+        image_base64: data.image_base64,
+      },
+    });
+    
+    revalidatePath("/admin/inventory");
+    revalidatePath("/");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error adding product:", error);
+    return { success: false, error: error.message || "Failed to add product" };
+  }
 }
 
 export async function updateProduct(id: number, data: {
@@ -48,27 +53,32 @@ export async function updateProduct(id: number, data: {
   sizes: string;
   image_base64?: string;
 }) {
-  await verifyAdminServerAction();
-  
-  const updateData: any = {
-    name: data.name,
-    description: data.description,
-    price: data.price,
-    sizes: data.sizes,
-  };
+  try {
+    await verifyAdminServerAction();
+    
+    const updateData: any = {
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      sizes: data.sizes,
+    };
 
-  if (data.image_base64) {
-    updateData.image_base64 = data.image_base64;
+    if (data.image_base64) {
+      updateData.image_base64 = data.image_base64;
+    }
+    
+    await prisma.product.update({
+      where: { id },
+      data: updateData,
+    });
+    
+    revalidatePath("/admin/inventory");
+    revalidatePath("/");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating product:", error);
+    return { success: false, error: error.message || "Failed to update product" };
   }
-  
-  await prisma.product.update({
-    where: { id },
-    data: updateData,
-  });
-  
-  revalidatePath("/admin/inventory");
-  revalidatePath("/");
-  return { success: true };
 }
 
 export async function deleteProduct(id: number) {
