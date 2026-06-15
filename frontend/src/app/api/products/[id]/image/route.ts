@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const resolvedParams = await params;
     const product = await prisma.product.findUnique({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(resolvedParams.id) },
       select: { image_base64: true }
     });
 
