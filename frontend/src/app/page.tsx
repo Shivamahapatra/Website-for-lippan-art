@@ -23,7 +23,7 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col px-4 md:px-8">
       <Hero />
-      <ProductNotchViewer products={products} />
+      <ProductNotchViewer products={products as any} />
       <Testimonials />
       <AboutArtist />
       <ProcessTimeline />
