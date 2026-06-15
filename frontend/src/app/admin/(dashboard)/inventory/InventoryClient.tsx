@@ -69,13 +69,16 @@ export function InventoryClient({ initialProducts }: { initialProducts: Product[
     setIsSubmitting(true);
     try {
       if (editingProduct) {
-        await updateProduct(editingProduct.id, {
+        const payload: any = {
           name: formData.name,
           description: formData.description,
           price: parseFloat(formData.price),
           sizes: formData.sizes,
-          image_base64: formData.image_base64,
-        });
+        };
+        if (formData.image_base64 !== editingProduct.image_base64) {
+          payload.image_base64 = formData.image_base64;
+        }
+        await updateProduct(editingProduct.id, payload);
         alert("Product updated successfully!");
       } else {
         await addProduct({
