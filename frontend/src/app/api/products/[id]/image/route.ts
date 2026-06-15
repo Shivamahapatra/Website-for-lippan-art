@@ -20,7 +20,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       return new NextResponse(buffer, {
         headers: {
           "Content-Type": mimeType,
-          "Cache-Control": "public, max-age=86400"
+          "Cache-Control": "public, max-age=0, must-revalidate"
         }
       });
     }
