@@ -41,7 +41,7 @@ export function ProductNotchViewer({ products }: { products: Product[] }) {
             animate={{ opacity: 0.3 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1 }}
-            src={selectedProduct.image_base64 || (selectedProduct.image_paths?.startsWith('http') ? selectedProduct.image_paths.split(',')[0] : '/placeholder.jpg')}
+            src={(selectedProduct as any).image_base64 || (selectedProduct.image_paths?.startsWith('http') ? selectedProduct.image_paths.split(',')[0] : `/api/products/${selectedProduct.id}/image`)}
             className="w-full h-full object-cover blur-[100px] scale-110 saturate-200"
           />
         </AnimatePresence>
@@ -60,7 +60,7 @@ export function ProductNotchViewer({ products }: { products: Product[] }) {
               className="relative aspect-square w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-background/50"
             >
               <img
-                src={selectedProduct.image_base64 || (selectedProduct.image_paths?.startsWith('http') ? selectedProduct.image_paths.split(',')[0] : '/placeholder.jpg')}
+                src={(selectedProduct as any).image_base64 || (selectedProduct.image_paths?.startsWith('http') ? selectedProduct.image_paths.split(',')[0] : `/api/products/${selectedProduct.id}/image`)}
                 alt={selectedProduct.name}
                 className="w-full h-full object-cover"
               />

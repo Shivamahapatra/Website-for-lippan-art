@@ -9,6 +9,14 @@ import { prisma } from "@/lib/db";
 
 export default async function Home() {
   const products = await prisma.product.findMany({
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      price: true,
+      sizes: true,
+      image_paths: true,
+    },
     orderBy: { id: 'desc' }
   });
 

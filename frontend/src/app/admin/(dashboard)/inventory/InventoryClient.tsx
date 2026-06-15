@@ -145,7 +145,7 @@ export function InventoryClient({ initialProducts }: { initialProducts: Product[
                 <td className="p-4">
                   <div className="w-12 h-12 rounded-lg bg-muted overflow-hidden">
                     <img 
-                      src={product.image_base64 || (product.image_paths?.startsWith('http') ? product.image_paths.split(',')[0] : '/placeholder.jpg')} 
+                      src={product.image_base64 || (product.image_paths?.startsWith('http') ? product.image_paths.split(',')[0] : `/api/products/${product.id}/image`)} 
                       alt={product.name} 
                       className="w-full h-full object-cover"
                     />
@@ -248,13 +248,19 @@ export function InventoryClient({ initialProducts }: { initialProducts: Product[
               <div>
                 <label className="block text-sm font-semibold mb-1">Product Image</label>
                 <div className="flex items-center gap-4">
-                  {formData.image_base64 && (
+                  {formData.image_base64 ? (
                     <img 
                       src={formData.image_base64} 
                       alt="Preview" 
                       className="w-16 h-16 rounded-lg object-cover border border-foreground/10"
                     />
-                  )}
+                  ) : editingProduct ? (
+                    <img 
+                      src={`/api/products/${editingProduct.id}/image`} 
+                      alt="Preview" 
+                      className="w-16 h-16 rounded-lg object-cover border border-foreground/10"
+                    />
+                  ) : null}
                   <label className="flex items-center gap-2 cursor-pointer bg-muted px-4 py-2 rounded-xl text-sm font-semibold hover:bg-muted/80 transition-colors">
                     <Upload className="w-4 h-4" />
                     Upload Image

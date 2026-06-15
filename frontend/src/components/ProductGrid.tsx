@@ -45,7 +45,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
               <CardBody className="bg-card group/card w-full border border-foreground/5 rounded-3xl p-4 sm:p-6 shadow-sm hover:shadow-xl transition-all h-full flex flex-col">
                 <CardItem translateZ="50" className="w-full relative aspect-square rounded-2xl overflow-hidden mb-6 bg-muted">
                   <img
-                    src={product.image_base64 || (product.image_paths?.startsWith('http') ? product.image_paths.split(',')[0] : '/placeholder.jpg')}
+                    src={(product as any).image_base64 || (product.image_paths?.startsWith('http') ? product.image_paths.split(',')[0] : `/api/products/${product.id}/image`)}
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105"
                   />
