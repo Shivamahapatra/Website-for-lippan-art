@@ -23,10 +23,34 @@ export function ProductNotchViewer({ products }: { products: Product[] }) {
         const nextIndex = (currentIndex + 1) % products.length;
         return products[nextIndex].id.toString();
       });
-    }, 5000); // Auto-advance every 5 seconds
+    }, 3500); // Auto-advance every 3.5 seconds
 
     return () => clearInterval(interval);
   }, [isHovered, isFullscreen, products]);
+
+  // Keyboard Hotkeys
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        setSelectedProductId((prevId) => {
+          const currentIndex = products.findIndex(p => p.id.toString() === prevId);
+          const nextIndex = (currentIndex + 1) % products.length;
+          return products[nextIndex].id.toString();
+        });
+      } else if (e.key === "ArrowLeft") {
+        setSelectedProductId((prevId) => {
+          const currentIndex = products.findIndex(p => p.id.toString() === prevId);
+          const nextIndex = (currentIndex - 1 + products.length) % products.length;
+          return products[nextIndex].id.toString();
+        });
+      } else if (e.key === "Escape" && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [products, isFullscreen]);
 
   const items: NotchItem[] = [
     {
@@ -49,6 +73,24 @@ export function ProductNotchViewer({ products }: { products: Product[] }) {
     <>
       <div id="shop" className="relative flex min-h-[80vh] w-full translate-z-0 items-center justify-center overflow-hidden rounded-[2.5rem] bg-background border border-foreground/5 [&_.fixed]:absolute shadow-xl my-12" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
         
+        {/* Playback Progress Bar */}
+        <div className="absolute top-0 left-0 h-1.5 bg-foreground/5 w-full z-20 overflow-hidden">
+          <style dangerouslySetInnerHTML={{__html: `
+            @keyframes fillProgress {
+              from { width: 0%; }
+              to { width: 100%; }
+            }
+          `}} />
+          <div 
+            key={selectedProduct.id}
+            className="h-full bg-primary"
+            style={{ 
+              animation: `fillProgress 3.5s linear forwards`,
+              animationPlayState: (isHovered || isFullscreen) ? 'paused' : 'running'
+            }}
+          />
+        </div>
+
         {/* Dynamic Background Blur */}
         <div className="absolute inset-0 z-0">
           <AnimatePresence mode="wait">
