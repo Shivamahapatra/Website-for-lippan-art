@@ -70,7 +70,7 @@ export function CartDrawer() {
                   >
                     <div className="w-20 h-20 bg-muted rounded-xl overflow-hidden shrink-0">
                       <img
-                        src={item.product.image_base64 || (item.product.image_paths?.startsWith('http') ? item.product.image_paths.split(',')[0] : '/placeholder.jpg')}
+                        src={(item.product as any).image_base64 || (item.product.image_paths?.startsWith('http') ? item.product.image_paths.split(',')[0] : `/api/products/${item.product.id}/image`)}
                         alt={item.product.name}
                         className="w-full h-full object-cover"
                       />
