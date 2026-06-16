@@ -5,7 +5,7 @@ import { Notch, type NotchItem } from "@/components/ui/notch";
 import { cn } from "@/lib/utils";
 import { Product } from "@prisma/client";
 import { useCartStore } from "@/store/useCartStore";
-import { ShoppingBag, Expand, X } from "lucide-react";
+import { ShoppingBag, Expand, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function ProductNotchViewer({ products }: { products: Product[] }) {
@@ -168,6 +168,33 @@ export function ProductNotchViewer({ products }: { products: Product[] }) {
             </AnimatePresence>
           </div>
         </div>
+
+        {/* On-Screen Navigation Arrows */}
+        <button 
+          onClick={() => {
+            setSelectedProductId((prevId) => {
+              const currentIndex = products.findIndex(p => p.id.toString() === prevId);
+              const nextIndex = (currentIndex - 1 + products.length) % products.length;
+              return products[nextIndex].id.toString();
+            });
+          }}
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-background/50 hover:bg-background/80 backdrop-blur-md border border-foreground/10 text-foreground/70 hover:text-foreground transition-all hover:scale-110 shadow-lg hidden sm:flex"
+        >
+          <ChevronLeft className="w-8 h-8" />
+        </button>
+
+        <button 
+          onClick={() => {
+            setSelectedProductId((prevId) => {
+              const currentIndex = products.findIndex(p => p.id.toString() === prevId);
+              const nextIndex = (currentIndex + 1) % products.length;
+              return products[nextIndex].id.toString();
+            });
+          }}
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-background/50 hover:bg-background/80 backdrop-blur-md border border-foreground/10 text-foreground/70 hover:text-foreground transition-all hover:scale-110 shadow-lg hidden sm:flex"
+        >
+          <ChevronRight className="w-8 h-8" />
+        </button>
 
         {/* Floating Notch Navigation */}
         <Notch 
