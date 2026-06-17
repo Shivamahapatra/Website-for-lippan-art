@@ -68,6 +68,7 @@ export function CheckoutForm() {
             if (verifyRes.success) {
               setSuccessTrackingId(verifyRes.trackingId);
               clearCart();
+              window.location.href = `/checkout/success?tracking=${verifyRes.trackingId}`;
             }
           } catch (err: any) {
             setError(err.message || "Payment verification failed.");
@@ -93,32 +94,12 @@ export function CheckoutForm() {
   };
 
   if (successTrackingId) {
+    // Fallback if router fails or is slow
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center justify-center p-12 bg-card rounded-3xl border border-foreground/5 shadow-2xl text-center"
-      >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.2 }}
-        >
-          <CheckCircle2 className="w-24 h-24 text-green-500 mb-6" />
-        </motion.div>
-        <h2 className="text-3xl font-bold mb-4">Payment Successful!</h2>
-        <p className="text-lg text-foreground/70 mb-8">
-          Thank you for your order, {formData.name}. We've sent a receipt to {formData.email}.
-        </p>
-        <div className="bg-muted px-8 py-4 rounded-xl">
-          <p className="text-sm font-medium text-foreground/50 uppercase tracking-widest mb-1">
-            Tracking ID
-          </p>
-          <p className="text-3xl font-bold font-mono tracking-wider text-primary">
-            {successTrackingId}
-          </p>
-        </div>
-      </motion.div>
+      <div className="flex flex-col items-center justify-center p-12 bg-card rounded-3xl border border-foreground/5 shadow-2xl text-center">
+        <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+        <p className="text-lg font-medium">Redirecting to order confirmation...</p>
+      </div>
     );
   }
 
