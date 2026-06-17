@@ -5,7 +5,7 @@ import { submitContactForm } from "@/actions/contact";
 import { Loader2, CheckCircle2, Send, MapPin, Phone, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 
-export function ContactForm() {
+export function ContactForm({ storeEmail }: { storeEmail: string }) {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -72,7 +72,7 @@ export function ContactForm() {
             </div>
             <div>
               <h4 className="font-bold text-lg">Email Us</h4>
-              <p className="text-foreground/60 text-lg">support@lippanart.com</p>
+              <p className="text-foreground/60 text-lg">{storeEmail || "support@lippanart.com"}</p>
             </div>
           </div>
 
@@ -82,7 +82,7 @@ export function ContactForm() {
             </div>
             <div>
               <h4 className="font-bold text-lg">Call Us</h4>
-              <p className="text-foreground/60 text-lg">+91 98765 43210</p>
+              <p className="text-foreground/60 text-lg">+91 7899214104</p>
               <p className="text-sm text-foreground/40 mt-1">Mon-Fri from 9am to 6pm</p>
             </div>
           </div>
