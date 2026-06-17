@@ -93,8 +93,17 @@ export function ContactForm() {
             </div>
             <div>
               <h4 className="font-bold text-lg">Visit the Studio</h4>
-              <p className="text-foreground/60 text-lg">123 Artisan Street, Heritage District</p>
-              <p className="text-foreground/60 text-lg">Mumbai, Maharashtra 400001</p>
+              <p className="text-foreground/60 text-lg">F401 Innovative Aqua Front, 403</p>
+              <p className="text-foreground/60 text-lg">Vibhutipura Extension, Doddanekkundi</p>
+              <p className="text-foreground/60 text-lg">Bengaluru, Karnataka 560037</p>
+              <a 
+                href="https://maps.app.goo.gl/4Nufp26ZGrZjBsYA7" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block mt-2 text-sm font-bold text-primary hover:text-accent transition-colors"
+              >
+                Open in Google Maps &rarr;
+              </a>
             </div>
           </div>
         </div>

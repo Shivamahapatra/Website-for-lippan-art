@@ -3,17 +3,14 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, MapPin, ExternalLink, Calendar, PackageCheck } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function CheckoutSuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const trackingId = searchParams.get("tracking") || "Pending";
 
   return (
-    <div className="min-h-screen bg-background py-32 px-6 relative overflow-hidden">
-      {/* Aurora Blurs */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-500/10 rounded-full blur-[128px] pointer-events-none -z-10" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[128px] pointer-events-none -z-10" />
-
+    <>
       <div className="max-w-4xl mx-auto flex flex-col items-center">
         
         <motion.div
@@ -106,11 +103,12 @@ export default function CheckoutSuccessPage() {
                 <MapPin className="w-5 h-5 text-foreground/50 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold">Studio Location</p>
-                  <p className="text-foreground/60">123 Artisan Street, Heritage District</p>
-                  <p className="text-foreground/60 mb-3">Mumbai, Maharashtra 400001</p>
+                  <p className="text-foreground/60">F401 Innovative Aqua Front, 403</p>
+                  <p className="text-foreground/60">Vibhutipura Extension, Doddanekkundi</p>
+                  <p className="text-foreground/60 mb-3">Bengaluru, Karnataka 560037</p>
                   
                   <a 
-                    href="https://maps.google.com/?q=Mumbai+Maharashtra" 
+                    href="https://maps.app.goo.gl/4Nufp26ZGrZjBsYA7" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-accent transition-colors"
@@ -124,6 +122,20 @@ export default function CheckoutSuccessPage() {
 
         </div>
       </div>
+    </>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <div className="min-h-screen bg-background py-32 px-6 relative overflow-hidden">
+      {/* Aurora Blurs */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-500/10 rounded-full blur-[128px] pointer-events-none -z-10" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[128px] pointer-events-none -z-10" />
+
+      <Suspense fallback={<div className="flex items-center justify-center h-[60vh]"><div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>}>
+        <SuccessContent />
+      </Suspense>
     </div>
   );
 }
