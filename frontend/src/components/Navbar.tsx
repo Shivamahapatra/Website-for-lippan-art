@@ -36,11 +36,9 @@ export function Navbar() {
 
         <div className="flex items-center gap-4">
           <SignedOut>
-            <SignInButton mode="modal">
-              <button className="text-sm font-bold text-foreground/80 hover:text-primary transition-colors">
-                Log In
-              </button>
-            </SignInButton>
+            <Link href="/sign-in" className="text-sm font-bold text-foreground/80 hover:text-primary transition-colors">
+              Log In
+            </Link>
           </SignedOut>
 
           <SignedIn>
