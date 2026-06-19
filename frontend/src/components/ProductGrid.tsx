@@ -10,6 +10,48 @@ import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
 
 type SortOption = "newest" | "price_asc" | "price_desc";
 
+function SpotlightCard({ children }: { children: React.ReactNode }) {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  return (
+    <div
+      className="relative w-full rounded-3xl h-full"
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setOpacity(1)}
+      onMouseLeave={() => setOpacity(0)}
+    >
+      {/* Background ambient glow that tracks cursor */}
+      <div
+        className="pointer-events-none absolute -inset-[2px] opacity-0 transition duration-300 rounded-3xl blur-sm"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(140, 90, 69, 0.5), transparent 40%)`,
+          zIndex: 0
+        }}
+      />
+      {/* Surface reflection glow */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 transition duration-300 rounded-3xl"
+        style={{
+          opacity,
+          background: `radial-gradient(400px circle at ${position.x}px ${position.y}px, rgba(255, 255, 255, 0.15), transparent 40%)`,
+          zIndex: 50,
+          mixBlendMode: "overlay"
+        }}
+      />
+      <div className="relative z-10 h-full w-full">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function ProductGrid({ products }: { products: Product[] }) {
   const { addItem, toggleCart } = useCartStore();
   const [searchQuery, setSearchQuery] = useState("");
@@ -96,44 +138,47 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3 }}
                 key={product.id}
+                className="h-full"
               >
-                <CardContainer className="inter-var w-full">
-                  <CardBody className="bg-card group/card w-full border border-foreground/5 rounded-3xl p-4 sm:p-6 shadow-sm hover:shadow-2xl transition-all h-full flex flex-col">
-                    <CardItem translateZ="50" className="w-full relative aspect-square rounded-2xl overflow-hidden mb-6 bg-muted">
-                      <img
-                        src={(product as any).image_base64 || (product.image_paths?.startsWith('http') ? product.image_paths.split(',')[0] : `/api/products/${product.id}/image`)}
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
-                      />
-                      <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-foreground/10 text-xs font-bold shadow-sm">
-                        In Stock
-                      </div>
-                    </CardItem>
-                    
-                    <CardItem translateZ="30" className="flex-1">
-                      <div className="flex justify-between items-start gap-4 mb-2">
-                        <h3 className="text-xl font-bold leading-tight">{product.name}</h3>
-                        <span className="text-lg font-bold text-primary shrink-0">₹{product.price.toString()}</span>
-                      </div>
-                      <p className="text-foreground/60 text-sm mb-6 line-clamp-2">
-                        {product.description}
-                      </p>
-                    </CardItem>
-                    
-                    <CardItem translateZ="40" className="w-full">
-                      <button 
-                        onClick={() => {
-                          addItem(product);
-                          toggleCart();
-                        }}
-                        className="w-full flex items-center justify-center gap-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3.5 px-4 rounded-xl transition-all group/btn"
-                      >
-                        <ShoppingCart className="w-4 h-4 transition-transform group-hover/btn:scale-110" />
-                        Add to Cart
-                      </button>
-                    </CardItem>
-                  </CardBody>
-                </CardContainer>
+                <SpotlightCard>
+                  <CardContainer className="inter-var w-full h-full">
+                    <CardBody className="bg-card group/card w-full border border-foreground/5 rounded-3xl p-4 sm:p-6 shadow-sm hover:shadow-xl transition-shadow h-full flex flex-col">
+                      <CardItem translateZ="50" className="w-full relative aspect-square rounded-2xl overflow-hidden mb-6 bg-muted">
+                        <img
+                          src={(product as any).image_base64 || (product.image_paths?.startsWith('http') ? product.image_paths.split(',')[0] : `/api/products/${product.id}/image`)}
+                          alt={product.name}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
+                        />
+                        <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-foreground/10 text-xs font-bold shadow-sm">
+                          In Stock
+                        </div>
+                      </CardItem>
+                      
+                      <CardItem translateZ="30" className="flex-1">
+                        <div className="flex justify-between items-start gap-4 mb-2">
+                          <h3 className="text-xl font-bold leading-tight">{product.name}</h3>
+                          <span className="text-lg font-bold text-primary shrink-0">₹{product.price.toString()}</span>
+                        </div>
+                        <p className="text-foreground/60 text-sm mb-6 line-clamp-2">
+                          {product.description}
+                        </p>
+                      </CardItem>
+                      
+                      <CardItem translateZ="40" className="w-full">
+                        <button 
+                          onClick={() => {
+                            addItem(product);
+                            toggleCart();
+                          }}
+                          className="w-full flex items-center justify-center gap-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3.5 px-4 rounded-xl transition-all group/btn"
+                        >
+                          <ShoppingCart className="w-4 h-4 transition-transform group-hover/btn:scale-110" />
+                          Add to Cart
+                        </button>
+                      </CardItem>
+                    </CardBody>
+                  </CardContainer>
+                </SpotlightCard>
               </motion.div>
             ))}
           </motion.div>
