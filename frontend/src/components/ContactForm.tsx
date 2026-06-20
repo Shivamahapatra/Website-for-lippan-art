@@ -5,6 +5,19 @@ import { submitContactForm } from "@/actions/contact";
 import { Loader2, CheckCircle2, Send, MapPin, Phone, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
+const BottomGradient = () => {
+  return (
+    <>
+      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-primary to-transparent" />
+      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-accent to-transparent" />
+    </>
+  );
+};
+
 export function ContactForm({ storeEmail }: { storeEmail: string }) {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
   const [loading, setLoading] = useState(false);
@@ -125,62 +138,64 @@ export function ContactForm({ storeEmail }: { storeEmail: string }) {
         )}
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium">Full Name</label>
-          <input
+          <Label htmlFor="name">Full Name</Label>
+          <Input
+            id="name"
             required
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="px-4 py-4 rounded-xl border border-foreground/10 bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
             placeholder="Jane Doe"
           />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium">Email Address</label>
-          <input
+          <Label htmlFor="email">Email Address</Label>
+          <Input
+            id="email"
             required
             type="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="px-4 py-4 rounded-xl border border-foreground/10 bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
             placeholder="jane@example.com"
           />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium">Phone Number (Optional)</label>
-          <input
+          <Label htmlFor="phone">Phone Number (Optional)</Label>
+          <Input
+            id="phone"
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="px-4 py-4 rounded-xl border border-foreground/10 bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
             placeholder="+91 98765 43210"
           />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium">Your Message</label>
-          <textarea
+          <Label htmlFor="message">Your Message</Label>
+          <Textarea
+            id="message"
             required
             rows={5}
             value={formData.message}
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-            className="px-4 py-4 rounded-xl border border-foreground/10 bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
             placeholder="How can we help you?"
+            className="resize-none"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-4 mt-2 bg-primary text-primary-foreground rounded-xl font-bold text-lg hover:bg-accent transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="group/btn relative overflow-hidden w-full py-4 mt-2 bg-primary text-primary-foreground rounded-xl font-bold text-lg hover:bg-accent transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
             <>
-              Send Message <Send className="w-5 h-5 ml-2" />
+              Send Message <Send className="w-5 h-5 ml-2 transition-transform group-hover/btn:translate-x-1" />
             </>
           )}
+          <BottomGradient />
         </button>
       </motion.form>
     </div>
