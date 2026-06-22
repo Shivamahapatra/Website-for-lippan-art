@@ -4,9 +4,9 @@ import { prisma } from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
-import { sendReceiptEmail, sendReviewEmail } from "@/lib/email";
+import { sendReceiptEmail, sendReviewEmail, sendPickupEmail } from "@/lib/email";
 
-const STAGES = [
+export const STAGES = [
   "Order Received",
   "Prepping Board",
   "Clay & Mirror Work",
@@ -47,6 +47,10 @@ export async function advanceOrderStatus(orderId: number) {
       data: { status: nextStatus },
     });
 
+    if (nextStatus === "Ready for Pickup") {
+      await sendPickupEmail(order.email, order.customer_name, order.tracking_id);
+    }
+    
     if (nextStatus === "Completed & Picked Up") {
       await sendReviewEmail(order.email, order.customer_name, order.tracking_id);
     }
@@ -56,4 +60,51 @@ export async function advanceOrderStatus(orderId: number) {
   }
 
   return { success: false, error: "Order is already at the final stage" };
+}
+
+export async function setOrderStatus(orderId: number, newStatus: string) {
+  await verifyAdminServerAction();
+
+  if (!STAGES.includes(newStatus)) {
+    throw new Error("Invalid status");
+  }
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+  });
+
+  if (!order) throw new Error("Order not found");
+
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { status: newStatus },
+  });
+
+  if (newStatus === "Ready for Pickup" && order.status !== "Ready for Pickup") {
+    await sendPickupEmail(order.email, order.customer_name, order.tracking_id);
+  }
+
+  if (newStatus === "Completed & Picked Up" && order.status !== "Completed & Picked Up") {
+    await sendReviewEmail(order.email, order.customer_name, order.tracking_id);
+  }
+
+  revalidatePath("/admin/orders");
+  return { success: true, newStatus };
+}
+
+export async function getOrdersByEmail(email: string) {
+  const orders = await prisma.order.findMany({
+    where: { email: email.toLowerCase() },
+    orderBy: { created_at: "desc" },
+    include: { items: { include: { product: true } } },
+  });
+  return orders;
+}
+
+export async function getOrderByTrackingId(trackingId: string) {
+  const order = await prisma.order.findUnique({
+    where: { tracking_id: trackingId },
+    include: { items: { include: { product: true } } },
+  });
+  return order;
 }

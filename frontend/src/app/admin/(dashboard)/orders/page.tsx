@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { advanceOrderStatus } from "@/actions/orders";
+import { OrderStatusUpdater } from "@/components/OrderStatusUpdater";
 import { ArrowRightCircle, CheckCircle2, Clock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ export default async function OrdersPage() {
   });
 
   const getStatusColor = (status: string) => {
-    if (status === "Ready for Pickup") return "text-green-500 bg-green-500/10 border-green-500/20";
+    if (status === "Ready for Pickup" || status === "Completed & Picked Up") return "text-green-500 bg-green-500/10 border-green-500/20";
     if (status === "Order Received") return "text-blue-500 bg-blue-500/10 border-blue-500/20";
     return "text-orange-500 bg-orange-500/10 border-orange-500/20";
   };
@@ -73,22 +73,7 @@ export default async function OrdersPage() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-foreground/5 flex justify-end">
-                {order.status !== "Ready for Pickup" ? (
-                  <form action={async () => {
-                    "use server";
-                    await advanceOrderStatus(order.id);
-                  }}>
-                    <button className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-bold hover:bg-accent transition-colors shadow-lg">
-                      Advance Status
-                      <ArrowRightCircle className="w-5 h-5" />
-                    </button>
-                  </form>
-                ) : (
-                  <div className="flex items-center gap-2 text-green-500 font-bold bg-green-500/10 px-5 py-2.5 rounded-xl border border-green-500/20">
-                    <CheckCircle2 className="w-5 h-5" />
-                    Completed
-                  </div>
-                )}
+                <OrderStatusUpdater orderId={order.id} currentStatus={order.status} />
               </div>
             </div>
           </div>

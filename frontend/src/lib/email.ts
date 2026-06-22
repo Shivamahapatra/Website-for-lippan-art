@@ -143,3 +143,68 @@ export async function sendReviewEmail(
     return false;
   }
 }
+
+export async function sendPickupEmail(
+  customerEmail: string,
+  customerName: string,
+  trackingId: string
+) {
+  const EMAIL_USER = process.env.EMAIL_USER;
+  const EMAIL_PASS = process.env.EMAIL_PASS;
+  
+  if (!EMAIL_USER || !EMAIL_PASS) {
+    console.log("--- MOCK PICKUP EMAIL ---");
+    console.log(`To: ${customerEmail}`);
+    console.log(`Subject: Your Order is Ready for Pickup! 🎉`);
+    console.log("--------------------------");
+    return false;
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS,
+    },
+  });
+
+  const htmlContent = `
+    <html>
+      <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+        <h2 style="color: #8c5a45;">Your order is ready!</h2>
+        <p>Hi ${customerName},</p>
+        <p>Great news! Your handcrafted Lippan Art piece (Tracking ID: <strong>${trackingId}</strong>) is complete and ready for you to pick up.</p>
+        
+        <div style="background: #faf8f5; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2d8d3;">
+            <h3 style="margin-top: 0; color: #8c5a45;">Pickup Details</h3>
+            <p><strong>Studio Address:</strong><br/>
+            F401 Innovative Aqua Front, 403<br/>
+            Vibhutipura Extension, Doddanekkundi<br/>
+            Bengaluru, Karnataka 560037</p>
+            <p><a href="https://maps.app.goo.gl/4Nufp26ZGrZjBsYA7" style="color: #8c5a45; font-weight: bold;">Open in Google Maps</a></p>
+            <p><strong>Contact:</strong> 7899214104</p>
+        </div>
+        
+        <p>Please bring a copy of this email or your Tracking ID with you.</p>
+        <p>Warmest regards,<br>Her Lippan Art</p>
+      </body>
+    </html>
+  `;
+
+  try {
+    const info = await transporter.sendMail({
+      from: \`"Her Lippan Art" <\${EMAIL_USER}>\`,
+      to: customerEmail,
+      subject: "Your Order is Ready for Pickup! 🎉",
+      text: \`Your order \${trackingId} is ready for pickup at our studio in Bengaluru.\`,
+      html: htmlContent,
+    });
+    console.log("Pickup email sent:", info.messageId);
+    return true;
+  } catch (error) {
+    console.error("Failed to send pickup email:", error);
+    return false;
+  }
+}
