@@ -2,9 +2,10 @@ import { prisma } from "@/lib/db";
 import { ReviewForm } from "@/components/ReviewForm";
 import { redirect } from "next/navigation";
 
-export default async function ReviewPage({ params }: { params: { tracking_id: string } }) {
+export default async function ReviewPage({ params }: { params: Promise<{ tracking_id: string }> }) {
+  const { tracking_id } = await params;
   const order = await prisma.order.findUnique({
-    where: { tracking_id: params.tracking_id },
+    where: { tracking_id },
     include: {
       items: {
         include: { product: true }

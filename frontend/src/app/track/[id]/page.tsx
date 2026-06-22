@@ -40,8 +40,9 @@ function Timeline({ currentStatus }: { currentStatus: string }) {
   );
 }
 
-export default async function TrackDetailsPage({ params }: { params: { id: string } }) {
-  const query = decodeURIComponent(params.id).trim();
+export default async function TrackDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const query = decodeURIComponent(id).trim();
   const isEmail = query.includes("@");
 
   if (isEmail) {
