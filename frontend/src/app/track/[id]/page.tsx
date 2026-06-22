@@ -1,4 +1,5 @@
-import { getOrdersByEmail, getOrderByTrackingId, STAGES } from "@/actions/orders";
+import { getOrdersByEmail, getOrderByTrackingId } from "@/actions/orders";
+import { STAGES } from "@/lib/constants";
 import { BuyAgainButton } from "@/components/BuyAgainButton";
 import { CheckCircle2, Clock, MapPin, Package, AlertCircle } from "lucide-react";
 import Link from "next/link";

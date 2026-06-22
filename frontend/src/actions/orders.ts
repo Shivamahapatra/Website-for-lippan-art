@@ -5,15 +5,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 import { sendReceiptEmail, sendReviewEmail, sendPickupEmail } from "@/lib/email";
-
-export const STAGES = [
-  "Order Received",
-  "Prepping Board",
-  "Clay & Mirror Work",
-  "Drying",
-  "Ready for Pickup",
-  "Completed & Picked Up",
-];
+import { STAGES } from "@/lib/constants";
 
 async function verifyAdminServerAction() {
   const user = await currentUser();

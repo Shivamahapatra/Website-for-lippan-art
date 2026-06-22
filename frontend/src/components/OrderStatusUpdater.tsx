@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { setOrderStatus, STAGES } from "@/actions/orders";
+import { setOrderStatus } from "@/actions/orders";
+import { STAGES } from "@/lib/constants";
 import { Loader2, Save } from "lucide-react";
 
 export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: number, currentStatus: string }) {
