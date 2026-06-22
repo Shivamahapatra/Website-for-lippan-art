@@ -9,7 +9,7 @@ export default async function TrackPage() {
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;
 
-  let orders = [];
+  let orders: any[] = [];
   if (email) {
     orders = await getOrdersByEmail(email);
   }
