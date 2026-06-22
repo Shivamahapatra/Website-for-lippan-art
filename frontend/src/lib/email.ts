@@ -195,10 +195,10 @@ export async function sendPickupEmail(
 
   try {
     const info = await transporter.sendMail({
-      from: \`"Her Lippan Art" <\${EMAIL_USER}>\`,
+      from: `"Her Lippan Art" <${EMAIL_USER}>`,
       to: customerEmail,
       subject: "Your Order is Ready for Pickup! 🎉",
-      text: \`Your order \${trackingId} is ready for pickup at our studio in Bengaluru.\`,
+      text: `Your order ${trackingId} is ready for pickup at our studio in Bengaluru.`,
       html: htmlContent,
     });
     console.log("Pickup email sent:", info.messageId);
