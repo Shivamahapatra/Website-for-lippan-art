@@ -1,4 +1,36 @@
 import nodemailer from "nodemailer";
+import { headers } from "next/headers";
+
+async function getBaseUrl() {
+  let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  
+  if (!baseUrl) {
+    try {
+      const headersList = await headers();
+      const host = headersList.get("host");
+      if (host) {
+        const protocol = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
+        baseUrl = `${protocol}://${host}`;
+      }
+    } catch (e) {
+      // Ignore if headers() throws (e.g. called outside request context)
+    }
+  }
+  
+  if (!baseUrl) {
+    if (process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+      baseUrl = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+    } else if (process.env.URL) {
+      baseUrl = process.env.URL;
+    } else {
+      baseUrl = 'http://localhost:3000';
+    }
+  }
+  
+  return baseUrl;
+}
 
 export async function sendReceiptEmail(
   customerEmail: string,
@@ -9,12 +41,16 @@ export async function sendReceiptEmail(
 ) {
   const EMAIL_USER = process.env.EMAIL_USER;
   const EMAIL_PASS = process.env.EMAIL_PASS;
+  
+  const baseUrl = await getBaseUrl();
+  const trackLink = `${baseUrl}/track/${trackingId}`;
 
   if (!EMAIL_USER || !EMAIL_PASS) {
     console.log("--- MOCK RECEIPT EMAIL ---");
     console.log(`To: ${customerEmail}`);
     console.log(`Subject: Order Confirmation - Her Lippan Art`);
     console.log(`Tracking ID: ${trackingId}`);
+    console.log(`Tracking Link: ${trackLink}`);
     console.log("--------------------------");
     return false;
   }
@@ -40,18 +76,19 @@ export async function sendReceiptEmail(
 
   const htmlContent = `
     <html>
-      <body style="font-family: Arial, sans-serif; color: #333;">
+      <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
         <h2 style="color: #8c5a45;">Thank You For Your Order!</h2>
         <p>Hi ${customerName},</p>
         <p>We have successfully received your payment of <strong>₹${total}</strong>.</p>
         
-        <div style="background: #faf8f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0;">Order Summary</h3>
+        <div style="background: #faf8f5; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2d8d3;">
+            <h3 style="margin-top: 0; color: #8c5a45;">Order Summary</h3>
             <ul>${itemsHtml}</ul>
             <p style="font-size: 1.2em;"><strong>Total: ₹${total}</strong></p>
         </div>
         
         <p>Your tracking ID is: <strong><span style="font-size: 1.2em; color: #8c5a45;">${trackingId}</span></strong></p>
+        <p>You can track the live progress of your artwork here: <a href="${trackLink}" style="color: #8c5a45; font-weight: bold;">Track My Order</a></p>
         <p>We will notify you as soon as your order is ready for pickup.</p>
         <br>
         <p>Best regards,<br>Her Lippan Art</p>
@@ -64,7 +101,7 @@ export async function sendReceiptEmail(
       from: `"Her Lippan Art" <${EMAIL_USER}>`,
       to: customerEmail,
       subject: "Order Confirmation - Her Lippan Art",
-      text: "Thank you for your order! Please enable HTML to view this receipt.",
+      text: `Thank you for your order! You can track your order here: ${trackLink}`,
       html: htmlContent,
     });
     console.log("Receipt sent:", info.messageId);
@@ -83,7 +120,7 @@ export async function sendReviewEmail(
   const EMAIL_USER = process.env.EMAIL_USER;
   const EMAIL_PASS = process.env.EMAIL_PASS;
   
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const baseUrl = await getBaseUrl();
   const reviewLink = `${baseUrl}/review/${trackingId}`;
 
   if (!EMAIL_USER || !EMAIL_PASS) {
@@ -152,10 +189,14 @@ export async function sendPickupEmail(
   const EMAIL_USER = process.env.EMAIL_USER;
   const EMAIL_PASS = process.env.EMAIL_PASS;
   
+  const baseUrl = await getBaseUrl();
+  const trackLink = `${baseUrl}/track/${trackingId}`;
+
   if (!EMAIL_USER || !EMAIL_PASS) {
     console.log("--- MOCK PICKUP EMAIL ---");
     console.log(`To: ${customerEmail}`);
     console.log(`Subject: Your Order is Ready for Pickup! 🎉`);
+    console.log(`Tracking Link: ${trackLink}`);
     console.log("--------------------------");
     return false;
   }
@@ -175,10 +216,11 @@ export async function sendPickupEmail(
       <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
         <h2 style="color: #8c5a45;">Your order is ready!</h2>
         <p>Hi ${customerName},</p>
-        <p>Great news! Your handcrafted Lippan Art piece (Tracking ID: <strong>${trackingId}</strong>) is complete and ready for you to pick up.</p>
+        <p>Great news! Your handcrafted Lippan Art piece is complete and ready for you to pick up.</p>
         
         <div style="background: #faf8f5; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2d8d3;">
             <h3 style="margin-top: 0; color: #8c5a45;">Pickup Details</h3>
+            <p><strong>Tracking ID:</strong> ${trackingId}</p>
             <p><strong>Studio Address:</strong><br/>
             F401 Innovative Aqua Front, 403<br/>
             Vibhutipura Extension, Doddanekkundi<br/>
@@ -187,6 +229,7 @@ export async function sendPickupEmail(
             <p><strong>Contact:</strong> 7899214104</p>
         </div>
         
+        <p>You can view the detailed status of your order anytime here: <a href="${trackLink}" style="color: #8c5a45; font-weight: bold;">Track My Order</a></p>
         <p>Please bring a copy of this email or your Tracking ID with you.</p>
         <p>Warmest regards,<br>Her Lippan Art</p>
       </body>
@@ -198,7 +241,7 @@ export async function sendPickupEmail(
       from: `"Her Lippan Art" <${EMAIL_USER}>`,
       to: customerEmail,
       subject: "Your Order is Ready for Pickup! 🎉",
-      text: `Your order ${trackingId} is ready for pickup at our studio in Bengaluru.`,
+      text: `Your order ${trackingId} is ready for pickup at our studio in Bengaluru. Track here: ${trackLink}`,
       html: htmlContent,
     });
     console.log("Pickup email sent:", info.messageId);

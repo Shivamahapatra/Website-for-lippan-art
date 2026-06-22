@@ -76,7 +76,7 @@ export function ReviewForm({ trackingId, items }: { trackingId: string, items: a
               )}
             >
               <img 
-                src={item.product.image_base64 || (item.product.image_paths?.startsWith('http') ? item.product.image_paths.split(',')[0] : '/placeholder.jpg')}
+                src={item.product.image_base64 || (item.product.image_paths?.startsWith('http') ? item.product.image_paths.split(',')[0] : `/api/products/${item.product_id}/image`)}
                 alt={item.product.name}
                 className="w-12 h-12 rounded-md object-cover"
               />
